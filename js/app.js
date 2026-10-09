@@ -238,8 +238,30 @@
     const run = $("testRun");
     if (setup) setup.hidden = phase !== "setup";
     if (run) run.hidden = phase !== "run";
-    if (views.test) views.test.classList.toggle("is-exam", phase === "run" && settings.mode === "timed");
-    document.body.classList.toggle("is-exam", phase === "run" && settings.mode === "timed");
+    const exam = phase === "run";
+    if (views.test) views.test.classList.toggle("is-exam", exam);
+    document.body.classList.toggle("is-exam", exam);
+  }
+
+  function updateSetupCopy() {
+    const titles = {
+      timed: "How long do you want to type?",
+      letter: "How long do you want to practice this letter?",
+      key: "How long do you want to practice these keys?",
+      keyword: "How long do you want to practice these words?",
+      lesson: "How long do you want to run this lesson?",
+      practice: "How long do you want to practice?"
+    };
+    const subs = {
+      timed: "Choose a duration. Only the timer will show while you type.",
+      letter: "Pick a time, then type. Results appear when the timer ends.",
+      key: "Pick a time, then type. Results appear when the timer ends.",
+      keyword: "Pick a time, then type. Results appear when the timer ends.",
+      lesson: "Pick a time, then type. Results appear when the timer ends.",
+      practice: "Pick a time, then type. Results appear when the timer ends."
+    };
+    if ($("setupTitle")) $("setupTitle").textContent = titles[settings.mode] || titles.timed;
+    if ($("setupSub")) $("setupSub").textContent = subs[settings.mode] || subs.timed;
   }
 
   function paintSetupDurations() {
@@ -257,7 +279,7 @@
         settings.duration = item.id;
         paintSetupDurations();
       });
-      b.addEventListener("dblclick", () => startTest({ mode: "timed" }));
+      b.addEventListener("dblclick", () => startTest());
       grid.appendChild(b);
     });
     const picked = DURATIONS.find((d) => d.id === settings.duration);
@@ -265,10 +287,12 @@
   }
 
   function openTimedSetup(extra = {}) {
-    Object.assign(settings, extra, { mode: "timed" });
+    Object.assign(settings, extra);
+    if (!settings.mode) settings.mode = "timed";
     stopTicker();
     state = null;
     paintSetupDurations();
+    updateSetupCopy();
     setTestPhase("setup");
     show("test");
   }
@@ -285,8 +309,7 @@
     if ($("progressFill")) $("progressFill").style.width = "0%";
     if ($("focusVeil")) $("focusVeil").classList.remove("is-hidden");
     if ($("typeStage")) $("typeStage").classList.toggle("is-blind", !!settings.blind);
-    const exam = settings.mode === "timed";
-    if ($("testShell")) $("testShell").classList.toggle("is-exam", exam);
+    if ($("testShell")) $("testShell").classList.add("is-exam");
     setTestPhase("run");
     updateTime();
     highlightGuide();
@@ -434,7 +457,7 @@
     if ($("setupPanel") && !$("setupPanel").hidden) {
       if (e.key === "Enter") {
         e.preventDefault();
-        startTest({ mode: "timed" });
+        startTest();
       }
       return;
     }
@@ -654,7 +677,7 @@
       card.className = "lesson-card";
       card.innerHTML = `<strong>${L.title}</strong><span>${L.keys}</span><em>45 second drill</em>`;
       card.addEventListener("click", () => {
-        startTest({
+        openTimedSetup({
           mode: "lesson",
           duration: 45,
           lessonPrompt: L.prompt,
@@ -668,9 +691,9 @@
   }
 
   function startDrill(mode, prompt, duration) {
-    startTest({
+    openTimedSetup({
       mode,
-      duration: duration || 45,
+      duration: duration || 60,
       lessonPrompt: prompt,
       collection: "easy",
       punctuation: false,
@@ -784,26 +807,26 @@
         if (name === "history") paintHistory();
         if (name === "practice" || name === "keys" || name === "lessons") paintKeysPage();
         if (name === "test") {
-          openTimedSetup();
+          openTimedSetup({ mode: "timed" });
           return;
         }
         show(name);
       });
     });
     document.querySelectorAll("[data-quick]").forEach((b) => {
-      b.addEventListener("click", () => openTimedSetup({ duration: Number(b.dataset.quick) }));
+      b.addEventListener("click", () => openTimedSetup({ mode: "timed", duration: Number(b.dataset.quick) }));
     });
-    if ($("heroStart")) $("heroStart").addEventListener("click", () => openTimedSetup({ duration: 60 }));
-    if ($("customStart")) $("customStart").addEventListener("click", () => openTimedSetup());
-    if ($("beginTestBtn")) $("beginTestBtn").addEventListener("click", () => startTest({ mode: "timed" }));
+    if ($("heroStart")) $("heroStart").addEventListener("click", () => openTimedSetup({ mode: "timed", duration: 60 }));
+    if ($("customStart")) $("customStart").addEventListener("click", () => openTimedSetup({ mode: "timed" }));
+    if ($("beginTestBtn")) $("beginTestBtn").addEventListener("click", () => startTest());
     if ($("restartBtn")) $("restartBtn").addEventListener("click", () => openTimedSetup());
     if ($("retryBtn")) $("retryBtn").addEventListener("click", () => openTimedSetup());
     if ($("newTestBtn")) $("newTestBtn").addEventListener("click", () => show("home"));
     if ($("certBtn")) $("certBtn").addEventListener("click", downloadCert);
     if ($("practiceStart")) $("practiceStart").addEventListener("click", () => {
-      startTest({
+      openTimedSetup({
         mode: "practice",
-        duration: 3600,
+        duration: 60,
         customText: ($("customText") && $("customText").value) || "",
         collection: "mixed"
       });
@@ -818,7 +841,7 @@
       $("wordTestBtn").addEventListener("click", () => startDrill("keyword", KEYWORD_DRILLS[2].prompt, 60));
     }
     if ($("levelBtn")) {
-      $("levelBtn").addEventListener("click", () => openTimedSetup({ duration: 60 }));
+      $("levelBtn").addEventListener("click", () => openTimedSetup({ mode: "timed", duration: 60 }));
     }
     const modal = $("authModal");
     function openAuth(title) {
@@ -852,7 +875,7 @@
       const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice" };
       const name = map[raw] || raw;
       if (name === "test") {
-        openTimedSetup();
+        openTimedSetup({ mode: "timed" });
         return;
       }
       if (name === "history") paintHistory();
@@ -874,7 +897,7 @@
   if (bootHash && bootHash !== "home") {
     const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice" };
     const name = map[bootHash] || bootHash;
-    if (name === "test") openTimedSetup();
+    if (name === "test") openTimedSetup({ mode: "timed" });
     else {
       if (name === "history") paintHistory();
       if (name === "practice") paintKeysPage();

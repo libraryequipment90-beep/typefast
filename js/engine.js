@@ -91,7 +91,7 @@ const Engine = (() => {
       keyTimes: {},
       misses: {},
       lastKeyAt: 0,
-      practice: settings.mode === "practice"
+      practice: false
     };
   }
 

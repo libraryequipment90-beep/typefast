@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/style.css?v=11">
   <style>
     html, body { background: #f4f7fb !important; color: #1b2437 !important; color-scheme: light; }
 :root {
@@ -584,8 +584,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       <div class="page-wrap">
         <div class="setup-panel" id="setupPanel">
           <p class="section-kicker">TYPING TEST</p>
-          <h1>How long do you want to type?</h1>
-          <p class="section-sub">Choose how many minutes you want. Only the timer will show while you type.</p>
+          <h1 id="setupTitle">How long do you want to type?</h1>
+          <p class="section-sub" id="setupSub">Choose how many minutes you want. Only the timer will show while you type.</p>
           <div class="duration-grid" id="setupDurations"></div>
           <button class="btn-primary" id="beginTestBtn">Start Test →</button>
         </div>
@@ -807,8 +807,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   </div>
 
   <canvas id="certCanvas" width="1400" height="900" hidden></canvas>
-  <script src="js/texts.js?v=10"></script>
-  <script src="js/engine.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/texts.js?v=11"></script>
+  <script src="js/engine.js?v=11"></script>
+  <script src="js/app.js?v=11"></script>
 </body>
 </html>
