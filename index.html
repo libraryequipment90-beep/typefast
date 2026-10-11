@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=11">
+  <link rel="stylesheet" href="css/style.css?v=17">
   <style>
     html, body { background: #f4f7fb !important; color: #1b2437 !important; color-scheme: light; }
 :root {
@@ -124,6 +124,82 @@ h1 span { color: var(--blue); font-style: italic; font-weight: 800; }
 
 .hero-art { position: relative; min-height: 420px; display: grid; place-items: center; }
 .hero-svg { width: min(100%, 640px); height: auto; display: block; }
+
+.studio-wrap {
+  display: grid; grid-template-columns: 180px 1fr; gap: 18px;
+  margin: 8px 48px 56px; background: #fff; border: 1px solid var(--line);
+  border-radius: 28px; padding: 22px; box-shadow: var(--shadow);
+}
+.studio-side { display: flex; flex-direction: column; gap: 8px; }
+.side-item {
+  display: flex; align-items: center; gap: 10px;
+  background: none; border: 0; border-radius: 14px;
+  padding: 12px 14px; color: var(--muted); font-weight: 700; text-align: left;
+}
+.side-item.is-on, .side-item:hover { background: #eef3ff; color: var(--blue); }
+.studio-main { min-width: 0; }
+.studio-top { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.studio-select {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px;
+}
+.studio-select select { border: 0; background: none; font: inherit; font-weight: 700; color: var(--ink); outline: none; }
+.studio-time { margin-left: auto; }
+.studio-prompt {
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px 18px; font-size: 22px; line-height: 1.7; min-height: 64px; margin-bottom: 16px;
+}
+.studio-prompt .ok { color: var(--ok); }
+.studio-prompt .bad { color: var(--bad); background: #ffe4ea; }
+.studio-prompt .cur { border-bottom: 2px solid var(--blue); }
+.studio-guide {
+  display: grid; grid-template-columns: 210px 1fr 210px; gap: 12px; align-items: stretch; margin-bottom: 16px;
+}
+.hand-card {
+  border-radius: 18px; padding: 14px 12px 10px; text-align: center;
+}
+.hand-card.left { background: #eef4ff; }
+.hand-card.right { background: #e9f9ee; }
+.hand-card h4 { margin: 0 0 12px; font-size: 13px; }
+.hand-card.right h4 { color: #16a34a; }
+.hand-keys { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.hand-key {
+  width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center;
+  background: #fff; font-weight: 800; box-shadow: 0 2px 0 rgba(15,23,42,.06);
+}
+.hand-card.right .hand-key { background: #dcfce7; color: #16a34a; }
+.hand-key.is-on { outline: 2px solid var(--blue); transform: translateY(-2px); }
+.hand-card.right .hand-key.is-on { outline-color: #16a34a; }
+.finger-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: 10px; color: var(--muted); line-height: 1.25; }
+.finger-map .dot { display: block; width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 4px; }
+.dot.lp { background: #c084fc; } .dot.lr { background: #f472b6; } .dot.lm { background: #2f6bff; } .dot.li { background: #f59e0b; }
+.dot.ri { background: #22c55e; } .dot.rm { background: #16a34a; } .dot.rr { background: #dc2626; } .dot.rp { background: #ef4444; }
+.studio-board-wrap { position: relative; min-height: 210px; }
+.studio-board { display: grid; gap: 6px; padding: 8px 4px 70px; }
+.studio-board .key-row { display: flex; gap: 5px; justify-content: center; }
+.studio-board .key {
+  min-width: 32px; height: 36px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: #fff;
+  font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700;
+}
+.studio-board .key.space-key { min-width: 160px; }
+.studio-board .key.home-l { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+.studio-board .key.home-r { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+.studio-board .key.shift-key { min-width: 48px; font-size: 9px; text-transform: none; }
+.studio-board .key.is-next { background: var(--blue); color: #fff; }
+.studio-board .key.f-li.is-next, .studio-board .key.f-ri.is-next { background: #22c55e; }
+.kb-hands { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); width: min(100%, 440px); height: 110px; pointer-events: none; }
+.studio-input {
+  width: 100%; border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 16px; font: inherit; font-size: 16px; margin-bottom: 16px; outline: none;
+}
+.studio-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,107,255,.12); }
+.studio-foot { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+.studio-metric { display: flex; align-items: center; gap: 8px; }
+.studio-metric strong { display: block; font-size: 20px; }
+.studio-metric span { display: block; color: var(--muted); font-size: 11px; }
+.studio-metric.ok strong { color: #16a34a; }
+.studio-reset { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; }
 
 .features {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
@@ -306,12 +382,13 @@ body.is-exam .site-footer { display: none; }
 .f-rr { right: 36px; height: 48px; }
 .f-rp { right: 8px; height: 40px; }
 
-.letter-grid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 8px; margin: 12px 0 24px; }
+.letter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 12px 0 24px; }
 .letter-btn, .lesson-card {
   border: 1px solid var(--line); background: #fff; border-radius: 16px; padding: 16px;
   text-align: left; font: inherit; cursor: pointer;
 }
 .letter-btn { aspect-ratio: 1; display: grid; place-items: center; font-weight: 800; font-size: 18px; }
+.letter-card strong { font-size: 22px; }
 .lesson-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 24px; }
 .lesson-card strong { display: block; }
 .lesson-card span, .lesson-card em { color: var(--muted); font-style: normal; font-size: 12px; }
@@ -378,10 +455,14 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
 @media (max-width: 980px) {
   .site-header { padding: 12px 16px; flex-wrap: wrap; }
   .main-nav { order: 3; width: 100%; overflow: auto; }
-  .hero, .features, .modes, .stats-bar { padding-left: 16px; padding-right: 16px; }
-  .hero, .features, .mode-grid, .stats-bar, .split { grid-template-columns: 1fr; }
+  .hero, .features, .studio-wrap { padding-left: 16px; padding-right: 16px; }
+  .hero, .features, .split { grid-template-columns: 1fr; }
   .hero-art { min-height: 240px; }
-  .letter-grid { grid-template-columns: repeat(7, 1fr); }
+  .studio-wrap { margin: 8px 16px 32px; grid-template-columns: 1fr; }
+  .studio-side { flex-direction: row; overflow: auto; }
+  .studio-guide { grid-template-columns: 1fr; }
+  .studio-time { margin-left: 0; }
+  .letter-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   .duration-grid { grid-template-columns: repeat(2, 1fr); }
   .site-footer { grid-template-columns: 1fr; text-align: center; }
   .foot-social, .copy, .foot-nav { justify-content: center; }
@@ -528,54 +609,121 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
         </div>
       </div>
 
-      <div class="modes">
-        <p class="section-kicker">CHOOSE YOUR TEST</p>
-        <h2>Start Practicing Today</h2>
-        <p class="section-sub">Select a mode that suits your goal and begin your typing journey.</p>
-        <div class="mode-grid">
-          <article class="mode-card">
-            <span class="mode-ico blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#2F6BFF" stroke-width="2"/><path d="M12 8v5l3 2" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round"/></svg></span>
-            <h3>Time Based Test</h3>
-            <p>Type for a fixed time (e.g. 1, 2 or 5 minutes) and see your speed and accuracy.</p>
-            <button class="mode-btn blue" data-quick="60">Start Test →</button>
-          </article>
-          <article class="mode-card">
-            <span class="mode-ico purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7V3z" stroke="#7B5CFF" stroke-width="2"/><path d="M14 3v6h6" stroke="#7B5CFF" stroke-width="2"/></svg></span>
-            <h3>Word Based Test</h3>
-            <p>Type a set number of words and improve your accuracy.</p>
-            <button class="mode-btn purple" id="wordTestBtn">Start Test →</button>
-          </article>
-          <article class="mode-card">
-            <span class="mode-ico green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="10" rx="5" stroke="#22C55E" stroke-width="2"/><path d="M8 13h4M10 11v4" stroke="#22C55E" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="12" r="1" fill="#22C55E"/><circle cx="18" cy="14" r="1" fill="#22C55E"/></svg></span>
-            <h3>Custom Text Practice</h3>
-            <p>Choose from different topics like news, quotes, tech and more.</p>
-            <button class="mode-btn green" data-nav="practice">Start Practice →</button>
-          </article>
-          <article class="mode-card">
-            <span class="mode-ico orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 18V10h3v8H5zm5.5 0V6h3v12h-3zM16 18v-5h3v5h-3z" fill="#F59E0B"/></svg></span>
-            <h3>Difficulty Levels</h3>
-            <p>Beginners to Advanced — pick a level that matches your skill.</p>
-            <button class="mode-btn orange" id="levelBtn">Select Level →</button>
-          </article>
-        </div>
-      </div>
-
-      <div class="stats-bar">
-        <div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" fill="#2F6BFF"/><circle cx="16" cy="9" r="2.4" fill="#93C5FD"/><path d="M4 18c1-3 3.5-4.5 5-4.5S13 15 14 18" stroke="#2F6BFF" stroke-width="2"/><path d="M14 18c.4-2 2-3.2 3.4-3.2 1.6 0 3.2 1.4 3.6 3.2" stroke="#93C5FD" stroke-width="2"/></svg>
-          <div><strong id="statUsers">10,000+</strong><span>Active Users</span></div>
-        </div>
-        <div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#7B5CFF" stroke-width="2"/><path d="M12 8v5l3 2" stroke="#7B5CFF" stroke-width="2" stroke-linecap="round"/></svg>
-          <div><strong id="bestWpm">75+</strong><span>Top Speed</span></div>
-        </div>
-        <div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#2F6BFF" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round"/></svg>
-          <div><strong id="avgAcc">98%</strong><span>Best Accuracy</span></div>
-        </div>
-        <div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.4 5.4L20 9.2l-4 4.2.9 6.1L12 16.8 7.1 19.5 8 13.4 4 9.2l5.6-.8L12 3z" fill="#F59E0B"/></svg>
-          <div><strong>4.8/5</strong><span>User Rating</span></div>
+      <div class="studio-wrap" id="homeStudio">
+        <aside class="studio-side">
+          <button class="side-item is-on" data-nav="test">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="3" stroke="currentColor" stroke-width="2"/><path d="M7 10h2M11 10h2M15 10h2M8 14h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Typing Test
+          </button>
+          <button class="side-item" data-nav="practice">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z" stroke="currentColor" stroke-width="2"/><path d="M5 4a3 3 0 013-3h8" stroke="currentColor" stroke-width="2"/></svg>
+            Practice
+          </button>
+          <button class="side-item" data-nav="history">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4h10v6a5 5 0 01-10 0V4z" stroke="currentColor" stroke-width="2"/><path d="M8 18h8v2H8z" fill="currentColor"/></svg>
+            Leaderboard
+          </button>
+          <button class="side-item" id="studioSettings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Settings
+          </button>
+        </aside>
+        <div class="studio-main">
+          <div class="studio-top">
+            <label class="studio-select">
+              <select id="studioDiff" aria-label="Difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+            <label class="studio-select">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7V3z" stroke="currentColor" stroke-width="2"/><path d="M14 3v6h6" stroke="currentColor" stroke-width="2"/></svg>
+              <select id="studioText" aria-label="Text type">
+                <option value="normal">Normal Text</option>
+                <option value="quotes">Quotes</option>
+                <option value="tech">Technology</option>
+                <option value="nature">Nature</option>
+              </select>
+            </label>
+            <label class="studio-select studio-time">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <select id="studioDur" aria-label="Duration">
+                <option value="30">00:30</option>
+                <option value="60" selected>01:00</option>
+                <option value="120">02:00</option>
+                <option value="180">03:00</option>
+                <option value="300">05:00</option>
+              </select>
+            </label>
+          </div>
+          <div class="studio-prompt" id="studioPrompt"></div>
+          <div class="studio-guide">
+            <div class="hand-card left">
+              <h4>Left Hand (A S D F)</h4>
+              <div class="hand-keys">
+                <span class="hand-key">A</span>
+                <span class="hand-key">S</span>
+                <span class="hand-key">D</span>
+                <span class="hand-key">F</span>
+              </div>
+              <div class="finger-map">
+                <span><i class="dot lp"></i>Little<br>(Left Pinky)</span>
+                <span><i class="dot lr"></i>Ring<br>(Left Ring)</span>
+                <span><i class="dot lm"></i>Middle<br>(Left Middle)</span>
+                <span><i class="dot li"></i>Index<br>(Left Index)</span>
+              </div>
+            </div>
+            <div class="studio-board-wrap">
+              <div class="studio-board" id="studioBoard"></div>
+              <svg class="kb-hands" viewBox="0 0 440 150" aria-hidden="true">
+                <path d="M118 18c6 22 10 40 8 62-8 4-16 6-22 2 2-22 4-42-2-62 5-4 10-4 16-2z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                <path d="M148 8c4 28 6 50 4 70-8 2-14 0-18-6 4-22 6-44 0-64 5-4 10-4 14 0z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                <path d="M176 4c2 30 2 54 0 74-8 0-14-4-16-10 4-22 6-46 2-66 5-2 10-2 14 2z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                <path d="M204 10c0 28-2 52-6 70-8-2-12-8-12-14 6-20 8-42 6-62 4-2 9 0 12 6z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                <path d="M132 78c18 18 40 28 58 26 4 8-2 18-14 22-28 4-54-8-70-24 4-12 14-20 26-24z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                <path d="M322 18c-6 22-10 40-8 62 8 4 16 6 22 2-2-22-4-42 2-62-5-4-10-4-16-2z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
+                <path d="M292 8c-4 28-6 50-4 70 8 2 14 0 18-6-4-22-6-44 0-64-5-4-10-4-14 0z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
+                <path d="M264 4c-2 30-2 54 0 74 8 0 14-4 16-10-4-22-6-46-2-66-5-2-10-2-14 2z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
+                <path d="M236 10c0 28 2 52 6 70 8-2 12-8 12-14-6-20-8-42-6-62-4-2-9 0-12 6z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
+                <path d="M308 78c-18 18-40 28-58 26-4 8 2 18 14 22 28 4 54-8 70-24-4-12-14-20-26-24z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="hand-card right">
+              <h4>Right Hand (J K L ;)</h4>
+              <div class="hand-keys">
+                <span class="hand-key">J</span>
+                <span class="hand-key">K</span>
+                <span class="hand-key">L</span>
+                <span class="hand-key">;</span>
+              </div>
+              <div class="finger-map">
+                <span><i class="dot ri"></i>Index<br>(Right Index)</span>
+                <span><i class="dot rm"></i>Middle<br>(Right Middle)</span>
+                <span><i class="dot rr"></i>Ring<br>(Right Ring)</span>
+                <span><i class="dot rp"></i>Little<br>(Right Pinky)</span>
+              </div>
+            </div>
+          </div>
+          <input class="studio-input" id="studioInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here...">
+          <div class="studio-foot">
+            <div class="studio-metric">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#64748b" stroke-width="2"/><path d="M12 8v5l3 2" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>
+              <div><strong id="studioWpm">0</strong><span>WPM</span></div>
+            </div>
+            <div class="studio-metric ok">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#22c55e" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>
+              <div><strong id="studioAcc">100%</strong><span>Accuracy</span></div>
+            </div>
+            <div class="studio-metric">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#2F6BFF" stroke-width="2"/><path d="M12 8v5l3 2" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round"/></svg>
+              <div><strong id="studioTime">00:60</strong><span>Time Left</span></div>
+            </div>
+            <button class="btn-primary studio-reset" id="studioReset">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0114-5M20 12a8 8 0 01-14 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M18 4v5h-5M6 20v-5h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+              Reset
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -699,17 +847,12 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       <div class="page-wrap">
         <p class="section-kicker">PRACTICE</p>
         <h1>Letter, key and keyword drills</h1>
-        <p class="section-sub">Watch the keyboard figure. Press the lit key with the shown finger.</p>
-        <div class="keys-intro">
-          <div class="mini-board" id="keysPreviewBoard"></div>
-          <p class="finger-legend" id="fingerLegend"></p>
-        </div>
+        <p class="section-sub">Pick a letter or key drill to start. Choose a time, then type.</p>
         <h3 class="subhead">Letter tests</h3>
-        <div class="letter-grid" id="letterGrid"></div>
+        <p class="section-sub">Tap a letter. You will type real words that use that letter, same as a keyword test.</p>
+        <div class="lesson-grid" id="letterGrid"></div>
         <h3 class="subhead">Key tests</h3>
         <div class="lesson-grid" id="keyDrillGrid"></div>
-        <h3 class="subhead">Keyword tests</h3>
-        <div class="lesson-grid" id="keywordGrid"></div>
         <h3 class="subhead">Guided lessons</h3>
         <div class="lesson-grid" id="lessonGrid"></div>
         <h3 class="subhead">Custom text</h3>
@@ -722,6 +865,12 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
             <button class="chip" data-practice="custom">Custom text</button>
           </div>
           <button class="btn-primary" id="practiceStart">Start practice</button>
+        </div>
+        <h3 class="subhead">Keyword tests</h3>
+        <div class="lesson-grid" id="keywordGrid"></div>
+        <div class="keys-intro">
+          <div class="mini-board" id="keysPreviewBoard"></div>
+          <p class="finger-legend" id="fingerLegend"></p>
         </div>
       </div>
     </section>
@@ -787,6 +936,7 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       <button data-nav="practice">Practice</button>
       <button data-nav="history">Leaderboard</button>
       <button data-nav="faq">About</button>
+      <button data-nav="faq">Contact</button>
     </nav>
     <div class="foot-social">
       <span aria-label="Facebook"><svg width="12" height="12" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h2.6l.4-3H13v-2c0-.6.4-1 1-1z"/></svg></span>
@@ -807,8 +957,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   </div>
 
   <canvas id="certCanvas" width="1400" height="900" hidden></canvas>
-  <script src="js/texts.js?v=11"></script>
-  <script src="js/engine.js?v=11"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/texts.js?v=17"></script>
+  <script src="js/engine.js?v=17"></script>
+  <script src="js/app.js?v=17"></script>
 </body>
 </html>

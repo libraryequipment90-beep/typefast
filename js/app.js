@@ -162,12 +162,12 @@
     Object.values(views).forEach((v) => v && v.classList.remove("is-active"));
     document.querySelectorAll(".nav-btn").forEach((b) => {
       const n = b.dataset.nav;
-      b.classList.toggle(
-        "is-active",
-        n === name ||
-          (name === "results" && n === "test") ||
-          (name === "test" && ["letter", "key", "keyword", "lesson"].includes(settings.mode) && n === "practice")
-      );
+      const fromPractice = ["letter", "key", "keyword", "lesson", "practice"].includes(settings.mode);
+      let active = n === name;
+      if (name === "test" || name === "results") {
+        active = fromPractice ? n === "practice" : n === "test";
+      }
+      b.classList.toggle("is-active", active);
     });
     const view = views[name] || views.home;
     view.classList.add("is-active");
@@ -231,6 +231,155 @@
     if ($("bestWpm")) $("bestWpm").textContent = String(Math.max(...list.map((x) => x.wpm)));
     const avg = list.reduce((a, b) => a + b.acc, 0) / list.length;
     if ($("avgAcc")) $("avgAcc").textContent = Math.round(avg) + "%";
+  }
+
+  const STUDIO_TEXT = "The quick brown fox jumps over the lazy dog.";
+  const studio = { text: STUDIO_TEXT, typed: "", started: false, done: false, t0: 0, left: 60, timer: null };
+
+  function studioFmt(sec) {
+    const s = Math.max(0, Math.floor(sec));
+    if (s <= 60) return "00:" + String(s).padStart(2, "0");
+    return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }
+
+  function buildStudioBoard(el, nextCh) {
+    if (!el) return;
+    el.innerHTML = "";
+    const next = nextCh ? nextCh.toLowerCase() : "";
+    const rows = [
+      ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";"],
+      ["z", "x", "c", "v", "b", "n", "m"]
+    ];
+    rows.forEach((row, ri) => {
+      const r = document.createElement("div");
+      r.className = "key-row";
+      if (ri === 2) {
+        const sh = document.createElement("span");
+        sh.className = "key shift-key";
+        sh.textContent = "Shift";
+        r.appendChild(sh);
+      }
+      row.forEach((k) => {
+        const b = document.createElement("span");
+        const f = fingerFor(k);
+        b.className = "key f-" + f;
+        if ("asdf".indexOf(k) >= 0) b.classList.add("home-l");
+        if ("jkl;".indexOf(k) >= 0) b.classList.add("home-r");
+        b.textContent = k;
+        if (next === k) b.classList.add("is-next");
+        r.appendChild(b);
+      });
+      if (ri === 2) {
+        const sh = document.createElement("span");
+        sh.className = "key shift-key";
+        sh.textContent = "Shift";
+        r.appendChild(sh);
+      }
+      el.appendChild(r);
+    });
+  }
+
+  function paintStudioPrompt() {
+    const el = $("studioPrompt");
+    if (!el) return;
+    const t = studio.text;
+    const typed = studio.typed;
+    let html = "";
+    for (let i = 0; i < t.length; i++) {
+      let cls = "";
+      if (i < typed.length) cls = typed[i] === t[i] ? "ok" : "bad";
+      else if (i === typed.length) cls = "cur";
+      html += "<span class=\"" + cls + "\">" + escapeHtml(t[i]) + "</span>";
+    }
+    el.innerHTML = html;
+    const next = (t[typed.length] || " ").toLowerCase();
+    buildStudioBoard($("studioBoard"), next);
+    document.querySelectorAll(".hand-key").forEach((node) => {
+      node.classList.toggle("is-on", node.textContent.toLowerCase() === next);
+    });
+  }
+
+  function studioStats() {
+    let ok = 0;
+    for (let i = 0; i < studio.typed.length; i++) if (studio.typed[i] === studio.text[i]) ok++;
+    const elapsed = studio.started ? Math.max(0.001, (Date.now() - studio.t0) / 1000) : 0;
+    const wpm = elapsed ? Math.round((ok / 5) / (elapsed / 60)) : 0;
+    const acc = studio.typed.length ? Math.round((ok / studio.typed.length) * 100) : 100;
+    if ($("studioWpm")) $("studioWpm").textContent = String(wpm);
+    if ($("studioAcc")) $("studioAcc").textContent = acc + "%";
+    if ($("studioTime")) $("studioTime").textContent = studioFmt(studio.left);
+  }
+
+  function stopStudioTimer() {
+    if (studio.timer) { clearInterval(studio.timer); studio.timer = null; }
+  }
+
+  function resetStudio() {
+    stopStudioTimer();
+    studio.typed = "";
+    studio.started = false;
+    studio.done = false;
+    studio.t0 = 0;
+    studio.left = Number(($("studioDur") && $("studioDur").value) || 60);
+    if ($("studioInput")) $("studioInput").value = "";
+    paintStudioPrompt();
+    studioStats();
+  }
+
+  function startStudioTick() {
+    if (studio.started || studio.done) return;
+    studio.started = true;
+    studio.t0 = Date.now();
+    studio.timer = setInterval(() => {
+      studio.left = Math.max(0, studio.left - 1);
+      studioStats();
+      if (studio.left <= 0) { studio.done = true; stopStudioTimer(); }
+    }, 1000);
+  }
+
+  function bindStudio() {
+    if (!$("studioPrompt")) return;
+    paintStudioPrompt();
+    studioStats();
+    if ($("studioInput")) {
+      $("studioInput").addEventListener("input", (e) => {
+        if (studio.done) { e.target.value = studio.typed; return; }
+        startStudioTick();
+        studio.typed = e.target.value.slice(0, studio.text.length);
+        if (studio.typed.length >= studio.text.length) { studio.done = true; stopStudioTimer(); }
+        paintStudioPrompt();
+        studioStats();
+      });
+    }
+    if ($("studioReset")) $("studioReset").addEventListener("click", resetStudio);
+    ["studioDiff", "studioText", "studioDur"].forEach((id) => {
+      if (!$(id)) return;
+      $(id).addEventListener("change", () => {
+        if (id === "studioDiff") {
+          settings.difficulty = $("studioDiff").value;
+          settings.collection = $("studioDiff").value;
+        }
+        if (id === "studioText") {
+          const v = $("studioText").value;
+          const map = { normal: "medium", quotes: "pop", tech: "tech", nature: "nature" };
+          settings.collection = map[v] || "medium";
+          if (v === "quotes") settings.practice = "quotes";
+        }
+        if (id === "studioDur") settings.duration = Number($("studioDur").value);
+        resetStudio();
+      });
+    });
+    if ($("studioSettings")) {
+      $("studioSettings").addEventListener("click", () => {
+        openTimedSetup({
+          mode: "timed",
+          duration: Number(($("studioDur") && $("studioDur").value) || 60),
+          difficulty: ($("studioDiff") && $("studioDiff").value) || "easy",
+          collection: ($("studioDiff") && $("studioDiff").value) || "easy"
+        });
+      });
+    }
   }
 
   function setTestPhase(phase) {
@@ -702,19 +851,41 @@
     });
   }
 
+  function wordsForLetter(ch) {
+    const c = ch.toLowerCase();
+    const hits = WORD_BANK.filter((w) => w.toLowerCase().includes(c));
+    const extra = {
+      q: ["quick", "quiet", "equal", "quote", "quest", "unique", "question"],
+      x: ["next", "extra", "box", "text", "six", "example", "exact"],
+      z: ["size", "quiz", "zone", "zero", "haze", "puzzle", "freeze"],
+      j: ["just", "join", "major", "enjoy", "jump", "object", "project"]
+    };
+    const pool = (hits.length ? hits : WORD_BANK).concat(extra[c] || []);
+    const out = [];
+    for (let i = 0; i < 90; i++) out.push(pool[Math.floor(Math.random() * pool.length)]);
+    return out.join(" ");
+  }
+
   function paintKeysPage() {
     const letters = $("letterGrid");
     if (!letters || !$("keyDrillGrid") || !$("keywordGrid")) return;
     letters.innerHTML = "";
     "abcdefghijklmnopqrstuvwxyz".split("").forEach((ch) => {
+      const samples = WORD_BANK.filter((w) => w.toLowerCase().includes(ch)).slice(0, 3);
+      const preview = (samples.length ? samples : [ch + "at", ch + "in", ch + "ay"]).join(" ");
       const b = document.createElement("button");
-      b.className = "letter-btn";
-      b.textContent = ch.toUpperCase();
+      b.className = "lesson-card letter-card";
+      b.innerHTML = "<strong>" + ch.toUpperCase() + "</strong><span>" + preview + "</span><em>Keyword drill</em>";
       b.title = FINGER_NAME[fingerFor(ch)];
-      b.addEventListener("click", () => {
-        const burst = Array(80).fill(ch).join(" ");
-        startDrill("letter", burst, 30);
-      });
+      b.addEventListener("click", () => startTest({
+        mode: "letter",
+        duration: 60,
+        lessonPrompt: wordsForLetter(ch),
+        collection: "easy",
+        punctuation: false,
+        numbers: false,
+        blind: false
+      }));
       letters.appendChild(b);
     });
     const keyGrid = $("keyDrillGrid");
@@ -816,7 +987,11 @@
     document.querySelectorAll("[data-quick]").forEach((b) => {
       b.addEventListener("click", () => openTimedSetup({ mode: "timed", duration: Number(b.dataset.quick) }));
     });
-    if ($("heroStart")) $("heroStart").addEventListener("click", () => openTimedSetup({ mode: "timed", duration: 60 }));
+    if ($("heroStart")) $("heroStart").addEventListener("click", () => {
+      const d = Number(($("studioDur") && $("studioDur").value) || 60);
+      const diff = ($("studioDiff") && $("studioDiff").value) || "medium";
+      openTimedSetup({ mode: "timed", duration: d, difficulty: diff, collection: diff });
+    });
     if ($("customStart")) $("customStart").addEventListener("click", () => openTimedSetup({ mode: "timed" }));
     if ($("beginTestBtn")) $("beginTestBtn").addEventListener("click", () => startTest());
     if ($("restartBtn")) $("restartBtn").addEventListener("click", () => openTimedSetup());
@@ -837,12 +1012,7 @@
         document.querySelectorAll("[data-practice]").forEach((x) => x.classList.toggle("is-on", x === b));
       });
     });
-    if ($("wordTestBtn")) {
-      $("wordTestBtn").addEventListener("click", () => startDrill("keyword", KEYWORD_DRILLS[2].prompt, 60));
-    }
-    if ($("levelBtn")) {
-      $("levelBtn").addEventListener("click", () => openTimedSetup({ mode: "timed", duration: 60 }));
-    }
+    bindStudio();
     const modal = $("authModal");
     function openAuth(title) {
       if ($("authTitle")) $("authTitle").textContent = title;
