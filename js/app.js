@@ -47,6 +47,7 @@
   let ticker = null;
   let lastResult = null;
   let soundOn = true;
+  let currentPrac = "letter";
   const audio = makeAudio();
   const storeKey = "typemaster-history-v1";
 
@@ -84,6 +85,36 @@
       desc: "Practice typing with letter drills, key tests, keyword lessons and custom text. Learn the right finger for every key.",
       path: "/#practice",
       hash: "practice"
+    },
+    letter: {
+      title: "Letter Typing Practice | TypeFast",
+      desc: "Practice one letter at a time on a live keyword layout and learn the right finger for every key.",
+      path: "/#practice-letter",
+      hash: "practice-letter"
+    },
+    key: {
+      title: "Key Typing Tests | TypeFast",
+      desc: "Practice home-row and key-group drills with a timed typing test.",
+      path: "/#practice-key",
+      hash: "practice-key"
+    },
+    keyword: {
+      title: "Keyword Typing Tests | TypeFast",
+      desc: "Practice common word sets and improve accuracy with timed keyword tests.",
+      path: "/#practice-keyword",
+      hash: "practice-keyword"
+    },
+    lesson: {
+      title: "Guided Typing Lessons | TypeFast",
+      desc: "Follow guided typing lessons from home row to full keyboard.",
+      path: "/#practice-lesson",
+      hash: "practice-lesson"
+    },
+    custom: {
+      title: "Custom Text Typing Practice | TypeFast",
+      desc: "Paste your own passage or practice random words, quotes and code.",
+      path: "/#practice-custom",
+      hash: "practice-custom"
     },
     history: {
       title: "Typing Leaderboard and History | TypeFast",
@@ -156,7 +187,7 @@
   }
 
   function show(name, opts = {}) {
-    const map = { lessons: "practice", keys: "practice", about: "faq", leaderboard: "history" };
+    const map = { lessons: "practice", keys: "practice", about: "faq", leaderboard: "history", letter: "practice", key: "practice", keyword: "practice", lesson: "practice", custom: "practice", "practice-letter": "practice", "practice-key": "practice", "practice-keyword": "practice", "practice-lesson": "practice", "practice-custom": "practice" };
     name = map[name] || name;
     if (!views[name]) name = "home";
     Object.values(views).forEach((v) => v && v.classList.remove("is-active"));
@@ -172,6 +203,7 @@
     const view = views[name] || views.home;
     view.classList.add("is-active");
     document.body.classList.toggle("is-exam", name === "test" && views.test && views.test.classList.contains("is-exam"));
+    if (name !== "practice") hideKwStage();
     applySeo(name);
     if (!opts.silentHash) {
       const hash = (SEO[name] && SEO[name].hash) || name;
@@ -257,6 +289,7 @@
       if (ri === 2) {
         const sh = document.createElement("span");
         sh.className = "key shift-key";
+        sh.dataset.k = "shift";
         sh.textContent = "Shift";
         r.appendChild(sh);
       }
@@ -264,20 +297,38 @@
         const b = document.createElement("span");
         const f = fingerFor(k);
         b.className = "key f-" + f;
+        b.dataset.k = k;
         if ("asdf".indexOf(k) >= 0) b.classList.add("home-l");
         if ("jkl;".indexOf(k) >= 0) b.classList.add("home-r");
         b.textContent = k;
         if (next === k) b.classList.add("is-next");
         r.appendChild(b);
       });
+      if (ri === 0) {
+        const bk = document.createElement("span");
+        bk.className = "key back-key";
+        bk.dataset.k = "backspace";
+        bk.textContent = "Backspace";
+        r.appendChild(bk);
+      }
       if (ri === 2) {
         const sh = document.createElement("span");
         sh.className = "key shift-key";
         sh.textContent = "Shift";
+        sh.dataset.k = "shift";
         r.appendChild(sh);
       }
       el.appendChild(r);
     });
+    const spaceRow = document.createElement("div");
+    spaceRow.className = "key-row";
+    const space = document.createElement("span");
+    space.className = "key space-key";
+    space.dataset.k = " ";
+    space.textContent = "space";
+    if (next === " " || next === "") space.classList.add("is-next");
+    spaceRow.appendChild(space);
+    el.appendChild(spaceRow);
   }
 
   function paintStudioPrompt() {
@@ -853,14 +904,17 @@
 
   function wordsForLetter(ch) {
     const c = ch.toLowerCase();
-    const hits = WORD_BANK.filter((w) => w.toLowerCase().includes(c));
     const extra = {
-      q: ["quick", "quiet", "equal", "quote", "quest", "unique", "question"],
-      x: ["next", "extra", "box", "text", "six", "example", "exact"],
-      z: ["size", "quiz", "zone", "zero", "haze", "puzzle", "freeze"],
-      j: ["just", "join", "major", "enjoy", "jump", "object", "project"]
+      q: ["quick", "quiet", "equal", "quote", "quest", "unique", "question", "quite", "require", "square"],
+      x: ["next", "extra", "box", "text", "six", "example", "exact", "mixed", "index", "except"],
+      z: ["size", "quiz", "zone", "zero", "haze", "puzzle", "freeze", "lazy", "amazing", "zebra"],
+      j: ["just", "join", "major", "enjoy", "jump", "object", "project", "job", "juice", "adjust"],
+      k: ["think", "like", "make", "know", "keep", "kind", "walk", "back", "work", "talk"],
+      v: ["have", "very", "every", "over", "even", "live", "give", "never", "move", "leave"]
     };
-    const pool = (hits.length ? hits : WORD_BANK).concat(extra[c] || []);
+    const hits = WORD_BANK.filter((w) => w.toLowerCase().includes(c));
+    let pool = hits.concat(extra[c] || []);
+    if (!pool.length) pool = [c + "at", c + "in", c + "ay", "the"];
     const out = [];
     for (let i = 0; i < 90; i++) out.push(pool[Math.floor(Math.random() * pool.length)]);
     return out.join(" ");
@@ -875,17 +929,10 @@
       const preview = (samples.length ? samples : [ch + "at", ch + "in", ch + "ay"]).join(" ");
       const b = document.createElement("button");
       b.className = "lesson-card letter-card";
+      b.dataset.letter = ch;
       b.innerHTML = "<strong>" + ch.toUpperCase() + "</strong><span>" + preview + "</span><em>Keyword drill</em>";
       b.title = FINGER_NAME[fingerFor(ch)];
-      b.addEventListener("click", () => startTest({
-        mode: "letter",
-        duration: 60,
-        lessonPrompt: wordsForLetter(ch),
-        collection: "easy",
-        punctuation: false,
-        numbers: false,
-        blind: false
-      }));
+      b.addEventListener("click", () => startKwLetter(ch));
       letters.appendChild(b);
     });
     const keyGrid = $("keyDrillGrid");
@@ -906,13 +953,197 @@
       card.addEventListener("click", () => startDrill("keyword", d.prompt, 60));
       wordGrid.appendChild(card);
     });
-    buildBoard($("keysPreviewBoard"), "f");
-    const legend = $("fingerLegend");
-    if (legend) {
-      legend.innerHTML = Object.entries(FINGER_NAME)
-        .map(([, name]) => `<span><b></b>${name}</span>`)
-        .join("");
+    bindKwBoard();
+    if (kw.letter) {
+      showKwStage();
+      paintKwPrompt();
     }
+  }
+
+  const kw = { letter: "", text: "The quick brown fox jumps over the lazy dog.", typed: "", index: 0 };
+
+  const PRAC_COPY = {
+    letter: { title: "Letter tests", sub: "Tap a letter. Then type its words on the keyword layout below." },
+    key: { title: "Key tests", sub: "Pick a key group. Timed exam starts after you choose duration." },
+    keyword: { title: "Keyword tests", sub: "Practice common word sets. Timed exam starts after you choose duration." },
+    lesson: { title: "Guided lessons", sub: "Follow a lesson path. Timed exam starts after you choose duration." },
+    custom: { title: "Custom text", sub: "Paste your own passage or start random words, quotes, or code." }
+  };
+
+  function showPracPane(id) {
+    const pane = id && PRAC_COPY[id] ? id : "letter";
+    currentPrac = pane;
+    document.querySelectorAll(".prac-pane").forEach((el) => {
+      const on = el.dataset.pracPane === pane;
+      el.classList.toggle("is-on", on);
+      el.hidden = !on;
+    });
+    document.querySelectorAll("[data-prac-go]").forEach((el) => {
+      el.classList.toggle("is-on", el.dataset.pracGo === pane);
+    });
+    const copy = PRAC_COPY[pane];
+    if ($("pracHeading")) $("pracHeading").textContent = copy.title;
+    if ($("pracSub")) $("pracSub").textContent = copy.sub;
+    hideKwStage();
+    const hash = "practice-" + pane;
+    if (location.hash.replace("#", "") !== hash) history.replaceState(null, "", "#" + hash);
+    applySeo(pane);
+  }
+
+  function showKwStage() {
+    const stage = $("kwStage");
+    if (!stage) return;
+    stage.hidden = false;
+    stage.classList.remove("is-idle");
+    document.body.classList.add("is-kw");
+    window.scrollTo(0, 0);
+  }
+
+  function hideKwStage() {
+    const stage = $("kwStage");
+    if (stage) {
+      stage.hidden = true;
+      stage.classList.add("is-idle");
+    }
+    document.body.classList.remove("is-kw");
+    kw.letter = "";
+    document.querySelectorAll("#letterGrid .letter-card").forEach((el) => el.classList.remove("is-on"));
+  }
+
+  function startKwLetter(ch) {
+    const c = String(ch || "a").toLowerCase();
+    kw.letter = c;
+    kw.text = wordsForLetter(c);
+    kw.typed = "";
+    kw.index = 0;
+    showKwStage();
+    if ($("kwTitle")) $("kwTitle").textContent = "Letter " + c.toUpperCase();
+    if ($("kwHint")) $("kwHint").textContent = "Type words with " + c.toUpperCase() + " on the keyword board";
+    if ($("kwInput")) {
+      $("kwInput").value = "";
+      $("kwInput").focus();
+    }
+    document.querySelectorAll("#letterGrid .letter-card").forEach((el) => {
+      el.classList.toggle("is-on", el.dataset.letter === c);
+    });
+    paintKwPrompt();
+  }
+
+  function paintKwPrompt() {
+    const el = $("kwPrompt");
+    if (!el) return;
+    const t = kw.text;
+    const start = Math.max(0, kw.index - 18);
+    const shown = t.slice(start, start + 70);
+    let html = "";
+    for (let i = 0; i < shown.length; i++) {
+      const abs = start + i;
+      let cls = "";
+      if (abs < kw.index) cls = kw.typed[abs] === t[abs] ? "ok" : "bad";
+      else if (abs === kw.index) cls = "cur";
+      html += "<span class=\"" + cls + "\">" + escapeHtml(shown[i]) + "</span>";
+    }
+    el.innerHTML = html;
+    const next = (t[kw.index] || " ").toLowerCase();
+    buildStudioBoard($("keysPreviewBoard"), next);
+  }
+
+  function feedKw(ch) {
+    if (!kw.text) return;
+    if (ch === "Backspace") {
+      if (kw.index > 0) {
+        kw.index -= 1;
+        kw.typed = kw.typed.slice(0, kw.index);
+      }
+      paintKwPrompt();
+      paintKwHit("backspace", true);
+      return;
+    }
+    if (ch.length !== 1) return;
+    kw.typed += ch;
+    kw.index += 1;
+    if (kw.index >= kw.text.length) {
+      kw.text = wordsForLetter(kw.letter || "a");
+      kw.typed = "";
+      kw.index = 0;
+    }
+    paintKwPrompt();
+    paintKwHit(ch, true);
+  }
+
+  function kwKeyNode(ch) {
+    const board = $("keysPreviewBoard");
+    if (!board || ch == null) return null;
+    const k = String(ch).toLowerCase();
+    if (k === "shift") return board.querySelector(".shift-key");
+    if (k === "backspace") return board.querySelector(".back-key");
+    if (k === " " || k === "space") return board.querySelector(".space-key");
+    return board.querySelector('.key[data-k="' + k.replace(/"/g, "") + '"]');
+  }
+
+  function paintKwHit(ch, press) {
+    const board = $("keysPreviewBoard");
+    if (!board) return;
+    const k = String(ch || "").toLowerCase();
+    if (k === "shift") {
+      board.querySelectorAll(".shift-key").forEach((el) => {
+        el.classList.toggle("is-press", !!press);
+      });
+      return;
+    }
+    board.querySelectorAll(".key.is-press").forEach((el) => el.classList.remove("is-press"));
+    const node = kwKeyNode(k);
+    if (!node || !press) return;
+    node.classList.add("is-press");
+    setTimeout(() => node.classList.remove("is-press"), 160);
+  }
+
+  function onPracticeKey(e) {
+    if (!views.practice || !views.practice.classList.contains("is-active")) return;
+    if (e.key === "Escape" && kw.letter) {
+      e.preventDefault();
+      hideKwStage();
+      return;
+    }
+    if (!kw.letter) return;
+    const tag = (e.target && e.target.tagName) || "";
+    if (tag === "TEXTAREA" || tag === "SELECT") return;
+    if (tag === "INPUT" && e.target.id !== "kwInput") return;
+    if (e.key === "Shift") {
+      paintKwHit("shift", true);
+      return;
+    }
+    if (e.key === "Backspace" || e.key.length === 1) {
+      if (e.target && e.target.id === "kwInput") e.preventDefault();
+      feedKw(e.key === "Backspace" ? "Backspace" : e.key);
+    }
+  }
+
+  function bindKwBoard() {
+    const board = $("keysPreviewBoard");
+    if (!board || board.dataset.bound === "1") return;
+    board.dataset.bound = "1";
+    board.addEventListener("click", (e) => {
+      const key = e.target.closest(".key");
+      if (!key) return;
+      const k = key.dataset.k || key.textContent.toLowerCase();
+      if (k === "shift") paintKwHit("shift", true);
+      else if (k === "backspace") feedKw("Backspace");
+      else if (k === " " || k === "space") feedKw(" ");
+      else if (kw.letter) feedKw(k);
+      else paintKwHit(k === "space" ? " " : k, true);
+    });
+    if ($("kwBack")) $("kwBack").addEventListener("click", hideKwStage);
+    if ($("kwInput")) {
+      $("kwInput").addEventListener("focus", () => {
+        if (!kw.letter) $("kwInput").blur();
+      });
+    }
+    document.addEventListener("keydown", onPracticeKey);
+    document.addEventListener("keyup", (e) => {
+      if (!views.practice || !views.practice.classList.contains("is-active")) return;
+      if (e.key === "Shift") paintKwHit("shift", false);
+    });
   }
 
   function paintFaq() {
@@ -976,7 +1207,12 @@
         e.preventDefault();
         const name = el.dataset.nav;
         if (name === "history") paintHistory();
-        if (name === "practice" || name === "keys" || name === "lessons") paintKeysPage();
+        if (name === "practice" || name === "keys" || name === "lessons") {
+          paintKeysPage();
+          show(name, { silentHash: true });
+          showPracPane(name === "keys" ? "key" : name === "lessons" ? "lesson" : currentPrac || "letter");
+          return;
+        }
         if (name === "test") {
           openTimedSetup({ mode: "timed" });
           return;
@@ -984,13 +1220,20 @@
         show(name);
       });
     });
+    document.querySelectorAll("[data-prac-go]").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        paintKeysPage();
+        show("practice", { silentHash: true });
+        showPracPane(el.dataset.pracGo);
+      });
+    });
     document.querySelectorAll("[data-quick]").forEach((b) => {
       b.addEventListener("click", () => openTimedSetup({ mode: "timed", duration: Number(b.dataset.quick) }));
     });
     if ($("heroStart")) $("heroStart").addEventListener("click", () => {
-      const d = Number(($("studioDur") && $("studioDur").value) || 60);
-      const diff = ($("studioDiff") && $("studioDiff").value) || "medium";
-      openTimedSetup({ mode: "timed", duration: d, difficulty: diff, collection: diff });
+      openTimedSetup({ mode: "timed", duration: 60, difficulty: "medium", collection: "medium" });
     });
     if ($("customStart")) $("customStart").addEventListener("click", () => openTimedSetup({ mode: "timed" }));
     if ($("beginTestBtn")) $("beginTestBtn").addEventListener("click", () => startTest());
@@ -1042,14 +1285,20 @@
     document.addEventListener("keydown", onKey);
     window.addEventListener("hashchange", () => {
       const raw = (location.hash || "#home").replace("#", "") || "home";
-      const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice" };
+      const paneFromHash = raw.indexOf("practice-") === 0 ? raw.slice(9) : (raw === "keys" ? "key" : raw === "lessons" ? "lesson" : "");
+      const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice", letter: "practice", key: "practice", keyword: "practice", lesson: "practice", custom: "practice", "practice-letter": "practice", "practice-key": "practice", "practice-keyword": "practice", "practice-lesson": "practice", "practice-custom": "practice" };
       const name = map[raw] || raw;
       if (name === "test") {
         openTimedSetup({ mode: "timed" });
         return;
       }
       if (name === "history") paintHistory();
-      if (name === "practice") paintKeysPage();
+      if (name === "practice") {
+        paintKeysPage();
+        show(name, { silentHash: true });
+        showPracPane(paneFromHash && PRAC_COPY[paneFromHash] ? paneFromHash : currentPrac || "letter");
+        return;
+      }
       show(name, { silentHash: true });
     });
   }
@@ -1065,13 +1314,19 @@
   if (savedUser && $("loginBtn")) $("loginBtn").textContent = savedUser;
   const bootHash = (location.hash || "").replace("#", "");
   if (bootHash && bootHash !== "home") {
-    const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice" };
+    const paneFromHash = bootHash.indexOf("practice-") === 0 ? bootHash.slice(9) : (bootHash === "keys" ? "key" : bootHash === "lessons" ? "lesson" : "");
+    const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice", letter: "practice", key: "practice", keyword: "practice", lesson: "practice", custom: "practice", "practice-letter": "practice", "practice-key": "practice", "practice-keyword": "practice", "practice-lesson": "practice", "practice-custom": "practice" };
     const name = map[bootHash] || bootHash;
     if (name === "test") openTimedSetup({ mode: "timed" });
     else {
       if (name === "history") paintHistory();
-      if (name === "practice") paintKeysPage();
-      show(name, { silentHash: true });
+      if (name === "practice") {
+        paintKeysPage();
+        show(name, { silentHash: true });
+        showPracPane(paneFromHash && PRAC_COPY[paneFromHash] ? paneFromHash : "letter");
+      } else {
+        show(name, { silentHash: true });
+      }
     }
   } else {
     applySeo("home");

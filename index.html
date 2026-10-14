@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=17">
+  <link rel="stylesheet" href="css/style.css?v=38">
   <style>
     html, body { background: #f4f7fb !important; color: #1b2437 !important; color-scheme: light; }
 :root {
@@ -51,65 +51,92 @@
   --pink-soft: #ffe6ef;
   --ok: #16a34a;
   --bad: #e11d48;
-  --shadow: 0 18px 50px rgba(47, 107, 255, 0.08);
+  --shadow: 0 12px 40px rgba(47, 107, 255, 0.08);
+  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.08);
   --radius: 22px;
   --sans: "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--sans);
   color: var(--ink);
   background: var(--bg);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-button { font: inherit; cursor: pointer; }
+button { font: inherit; cursor: pointer; transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease, border-color .18s ease; }
 .view { display: none; }
 .view.is-active { display: block; }
+#view-home.is-active { background: #f6f8fc; }
 
 .site-header {
-  position: sticky; top: 0; z-index: 20;
-  display: flex; align-items: center; gap: 24px;
-  padding: 14px 56px;
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 20px;
+  padding: 10px clamp(28px, 6vw, 104px);
   background: #fff;
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid #eef2f7;
 }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
 .logo-mark {
-  width: 42px; height: 42px; border-radius: 12px;
-  display: grid; place-items: center; background: var(--blue-soft);
+  width: 44px; height: 44px; border-radius: 12px;
+  display: grid; place-items: center; background: #eef3ff;
 }
-.logo-text { display: flex; flex-direction: column; line-height: 1.1; }
-.logo-text strong { font-size: 22px; font-weight: 800; color: var(--blue); }
-.logo-text small { color: var(--muted); font-size: 11px; margin-top: 3px; }
-.main-nav { display: flex; gap: 6px; margin: 0 auto; }
+.logo-text { display: flex; flex-direction: column; line-height: 1.05; }
+.logo-text strong { font-size: 20px; font-weight: 800; color: var(--blue); letter-spacing: -0.02em; }
+.logo-text small { color: #94a3b8; font-size: 10.5px; margin-top: 3px; font-weight: 500; }
+.main-nav { display: flex; gap: 2px; margin: 0 auto; }
 .nav-btn {
-  background: none; border: 0; color: var(--muted);
-  padding: 8px 14px; border-radius: 999px; font-weight: 600;
+  background: none; border: 0; color: #64748b;
+  padding: 10px 16px; border-radius: 0; font-weight: 600; white-space: nowrap; font-size: 15px;
 }
-.nav-btn.is-active, .nav-btn:hover { color: var(--blue); }
-.nav-btn.is-active { box-shadow: inset 0 -2px 0 var(--blue); border-radius: 0; }
-.header-actions { display: flex; gap: 10px; }
+.nav-btn.is-active, .nav-btn:hover { color: var(--blue); background: none; }
+.nav-btn.is-active { box-shadow: inset 0 -2.5px 0 var(--blue); }
+.nav-drop { position: relative; }
+.nav-drop:hover .nav-menu, .nav-drop:focus-within .nav-menu { display: grid; }
+.nav-menu {
+  display: none; position: absolute; top: calc(100% - 4px); left: 0; min-width: 200px;
+  background: #fff; border: 1px solid var(--line); border-radius: 16px;
+  padding: 8px; box-shadow: var(--shadow-lg); z-index: 50;
+}
+.nav-menu button {
+  background: none; border: 0; text-align: left; padding: 11px 14px;
+  border-radius: 10px; color: var(--ink); font-weight: 600; width: 100%;
+}
+.nav-menu button:hover, .nav-menu button.is-on { background: var(--blue-soft); color: var(--blue); }
+.prac-tabs { display: none; }
+.prac-pane { display: none !important; }
+.prac-pane.is-on { display: block !important; animation: fadeUp .28s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.header-actions { display: flex; gap: 10px; flex-shrink: 0; }
 .btn-login, .btn-signup, .btn-primary, .btn-secondary, .btn-ghost, .mode-btn {
-  border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700;
+  border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 700;
 }
-.btn-login { background: #fff; border: 1px solid var(--line); color: var(--ink); }
-.btn-signup, .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 8px 20px rgba(47,107,255,.28); }
-.btn-secondary, .btn-ghost { background: #fff; border: 1px solid var(--line); color: var(--ink); }
-.btn-primary:hover, .btn-signup:hover { filter: brightness(1.05); }
+.btn-login { background: #fff; border: 1.5px solid #dbe3f0; color: #334155; padding: 9px 20px; }
+.btn-signup, .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 10px 22px rgba(47,107,255,.28); }
+.btn-secondary, .btn-ghost { background: #fff; border: 1.5px solid #dbe3f0; color: var(--ink); }
+.btn-primary:hover, .btn-signup:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.btn-login:hover, .btn-secondary:hover, .btn-ghost:hover { border-color: #c9d6ee; background: #f8fafc; }
 
 .hero {
-  display: grid; grid-template-columns: 1.05fr 1fr; gap: 8px; align-items: center;
-  padding: 36px 64px 10px;
-  background: linear-gradient(180deg, #eaf1ff 0%, #f5f8fd 62%, #fff 100%);
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 24px; align-items: center;
+  padding: 18px clamp(28px, 6vw, 104px) 0;
+  background: linear-gradient(180deg, #eaf2ff 0%, #f3f7fd 55%, #fff 100%);
 }
-.hero-copy { max-width: 560px; }
+.hero-copy { max-width: 560px; padding: 8px 0 12px; }
 .pill-badge {
   display: inline-flex; align-items: center; gap: 8px;
   background: #fff; color: var(--blue); border-radius: 999px;
-  padding: 8px 14px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow);
+  padding: 7px 14px; font-size: 13px; font-weight: 700; box-shadow: 0 6px 20px rgba(47,107,255,.1);
 }
-h1 { font-size: clamp(42px, 5.4vw, 72px); line-height: 1.02; margin: 18px 0 14px; letter-spacing: -0.03em; }
+h1 { font-size: clamp(32px, 4.4vw, 50px); line-height: 1.08; margin: 12px 0 12px; letter-spacing: -0.035em; font-weight: 800; }
 h1 span { color: var(--blue); font-style: italic; font-weight: 800; }
 .page-wrap > h1 { font-size: 36px; margin: 0 0 8px; }
 .setup-panel h1 { font-size: 36px; margin: 0 0 8px; }
@@ -117,18 +144,18 @@ h1 span { color: var(--blue); font-style: italic; font-weight: 800; }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
-.hero-copy p, .section-sub { color: var(--muted); font-size: 17px; line-height: 1.65; max-width: 520px; }
-.hero-cta { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; align-items: center; }
-.hero-cta .btn-primary { padding: 15px 26px; font-size: 15px; }
-.hero-cta .btn-secondary { padding: 15px 22px; display: inline-flex; align-items: center; gap: 8px; }
+.hero-copy p, .section-sub { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 460px; }
+.hero-cta { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; align-items: center; }
+.hero-cta .btn-primary { padding: 14px 26px; font-size: 15px; }
+.hero-cta .btn-secondary { padding: 13px 22px; display: inline-flex; align-items: center; gap: 8px; background: #fff; }
 
-.hero-art { position: relative; min-height: 420px; display: grid; place-items: center; }
-.hero-svg { width: min(100%, 640px); height: auto; display: block; }
+.hero-art { position: relative; min-height: 0; display: flex; justify-content: flex-end; align-items: center; overflow: hidden; }
+.hero-svg, .hero-img { width: min(100%, 440px); max-height: 300px; height: auto; display: block; object-fit: contain; margin-left: auto; }
 
 .studio-wrap {
-  display: grid; grid-template-columns: 180px 1fr; gap: 18px;
-  margin: 8px 48px 56px; background: #fff; border: 1px solid var(--line);
-  border-radius: 28px; padding: 22px; box-shadow: var(--shadow);
+  display: grid; grid-template-columns: 188px 1fr; gap: 18px;
+  margin: 8px clamp(28px, 6vw, 104px) 56px; background: #fff; border: 1px solid var(--line);
+  border-radius: 28px; padding: clamp(16px, 2vw, 24px); box-shadow: var(--shadow);
 }
 .studio-side { display: flex; flex-direction: column; gap: 8px; }
 .side-item {
@@ -153,7 +180,7 @@ h1 span { color: var(--blue); font-style: italic; font-weight: 800; }
 .studio-prompt .bad { color: var(--bad); background: #ffe4ea; }
 .studio-prompt .cur { border-bottom: 2px solid var(--blue); }
 .studio-guide {
-  display: grid; grid-template-columns: 210px 1fr 210px; gap: 12px; align-items: stretch; margin-bottom: 16px;
+  display: grid; grid-template-columns: minmax(160px, 210px) minmax(0, 1fr) minmax(160px, 210px); gap: 12px; align-items: stretch; margin-bottom: 16px;
 }
 .hand-card {
   border-radius: 18px; padding: 14px 12px 10px; text-align: center;
@@ -183,11 +210,87 @@ h1 span { color: var(--blue); font-style: italic; font-weight: 800; }
   font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 700;
 }
 .studio-board .key.space-key { min-width: 160px; }
-.studio-board .key.home-l { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
-.studio-board .key.home-r { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
-.studio-board .key.shift-key { min-width: 48px; font-size: 9px; text-transform: none; }
+.kw-board .key.space-key {
+  min-width: 240px; height: 44px; text-transform: none; font-size: 12px; letter-spacing: .08em;
+}
+.kw-board .key.space-key.is-press { background: #dbeafe; color: #1d4ed8; }
+.studio-board .key.home-l, .kw-board .key.home-l { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+.studio-board .key.home-r, .kw-board .key.home-r { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+.studio-board .key.shift-key, .kw-board .key.shift-key { min-width: 54px; font-size: 11px; text-transform: none; color: #94a3b8; font-weight: 600; }
+.studio-board .key.back-key, .kw-board .key.back-key {
+  min-width: 92px; font-size: 11px; text-transform: none; color: #64748b; font-weight: 700;
+}
+.kw-board .key.back-key.is-press { background: #fecaca; color: #991b1b; border-color: #f87171; }
 .studio-board .key.is-next { background: var(--blue); color: #fff; }
-.studio-board .key.f-li.is-next, .studio-board .key.f-ri.is-next { background: #22c55e; }
+.studio-board .key.f-li.is-next, .studio-board .key.f-ri.is-next,
+.kw-board .key.is-next { background: #22c55e; color: #fff; border-color: #22c55e; }
+
+.kw-stage {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 22px 24px 8px;
+  margin: 8px 0 28px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.kw-stage[hidden], .kw-stage.is-idle { display: none; }
+body.is-kw .site-footer,
+body.is-kw .prac-tabs,
+body.is-kw .section-kicker,
+body.is-kw #pracHeading,
+body.is-kw #pracSub,
+body.is-kw #letterGrid { display: none !important; }
+body.is-kw #view-practice .page-wrap {
+  max-width: none; margin: 0; padding: 12px 20px 20px;
+  min-height: calc(100vh - 74px);
+}
+body.is-kw .kw-stage {
+  margin: 0; border-radius: 0; box-shadow: none; border: 0;
+  min-height: calc(100vh - 98px);
+  display: flex; flex-direction: column;
+  padding: 16px 12px 8px;
+}
+body.is-kw .kw-prompt { font-size: 26px; min-height: 72px; padding: 18px 20px; }
+body.is-kw .kw-board { flex: 1; padding-bottom: 80px; }
+.kw-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.kw-head strong { font-size: 16px; }
+.kw-head span { color: var(--muted); font-size: 13px; margin-left: auto; }
+#kwBack { padding: 8px 14px; font-size: 13px; }
+.kw-prompt {
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 16px; font-size: 22px; line-height: 1.7; min-height: 56px; margin-bottom: 12px;
+  letter-spacing: 0.01em;
+}
+.kw-prompt .ok { color: var(--ok); }
+.kw-prompt .bad { color: var(--bad); background: #ffe4ea; }
+.kw-prompt .cur { border-bottom: 2px solid var(--blue); }
+.kw-input {
+  width: 100%; border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 14px; font: inherit; font-size: 16px; margin-bottom: 16px; outline: none;
+}
+.kw-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,107,255,.12); }
+.letter-card.is-on { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+.kw-board { display: grid; gap: 10px; padding: 0 8px 72px; }
+.kw-board .key-row { display: flex; gap: 8px; justify-content: center; }
+.kw-board .key {
+  min-width: 44px; height: 48px; display: grid; place-items: center;
+  border: 1.5px solid #d7e0ee; border-radius: 12px; background: #fff;
+  font-size: 15px; text-transform: uppercase; color: #64748b; font-weight: 700;
+  cursor: pointer; transition: transform .08s ease, box-shadow .08s ease, background .08s ease;
+}
+.kw-board .key.is-press {
+  transform: translateY(2px) scale(.96);
+  box-shadow: inset 0 2px 0 rgba(15,23,42,.12);
+}
+.kw-board .key.home-l.is-press { background: #93c5fd; color: #1e3a8a; }
+.kw-board .key.home-r.is-press { background: #86efac; color: #14532d; }
+.kw-board .shift-key.is-press { background: #e2e8f0; color: #334155; }
+.kw-hands {
+  position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
+  width: min(92%, 520px); height: 132px; pointer-events: none;
+}
 .kb-hands { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); width: min(100%, 440px); height: 110px; pointer-events: none; }
 .studio-input {
   width: 100%; border: 1px solid var(--line); border-radius: 12px;
@@ -202,57 +305,61 @@ h1 span { color: var(--blue); font-style: italic; font-weight: 800; }
 .studio-reset { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; }
 
 .features {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
-  padding: 18px 64px 40px; background: #fff;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  padding: 18px clamp(28px, 6vw, 104px) 20px; background: #fff;
+  border-top: 1px solid #f1f5f9;
 }
-.feature { display: flex; gap: 12px; align-items: flex-start; }
+.feature { display: flex; gap: 14px; align-items: flex-start; }
 .ico {
-  width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
   flex: 0 0 auto;
 }
 .ico.green { background: #22c55e; }
 .ico.purple { background: #7b5cff; }
 .ico.orange { background: #f59e0b; }
 .ico.pink { background: #fb7185; }
-.feature h3 { margin: 0 0 4px; font-size: 15px; }
-.feature p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.feature h3 { margin: 2px 0 4px; font-size: 15px; font-weight: 800; }
+.feature p { margin: 0; color: #8b95a8; font-size: 13px; line-height: 1.5; }
 
-.modes { padding: 28px 64px 12px; text-align: center; }
-.section-kicker { letter-spacing: 0.18em; font-size: 12px; color: var(--muted); font-weight: 700; margin: 0 0 8px; }
-h2 { font-size: 36px; margin: 0 0 8px; letter-spacing: -0.03em; }
-.section-sub { margin: 0 auto 28px; }
-.mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; text-align: left; }
+.modes { padding: 32px clamp(28px, 6vw, 104px) 4px; text-align: center; background: #f6f8fc; }
+.modes .section-sub { max-width: 520px; }
+.section-kicker { letter-spacing: 0.22em; font-size: 11px; color: #94a3b8; font-weight: 700; margin: 0 0 10px; }
+h2 { font-size: 34px; margin: 0 0 10px; letter-spacing: -0.03em; font-weight: 800; }
+.section-sub { margin: 0 auto 32px; }
+.mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: left; }
 .mode-card {
-  background: #fff; border: 1px solid var(--line); border-radius: 24px;
-  padding: 22px; box-shadow: var(--shadow); min-height: 250px;
+  background: #fff; border: 1px solid #eef2f7; border-radius: 22px;
+  padding: 26px 24px 22px; box-shadow: 0 10px 30px rgba(47,107,255,.06); min-height: 248px;
   display: flex; flex-direction: column;
 }
+.mode-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 .mode-ico {
-  width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-size: 22px; margin-bottom: 16px;
+  width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-size: 22px; margin-bottom: 18px;
 }
 .mode-ico.blue { background: var(--blue-soft); }
 .mode-ico.purple { background: var(--purple-soft); }
 .mode-ico.green { background: var(--green-soft); }
 .mode-ico.orange { background: var(--orange-soft); }
-.mode-card h3 { margin: 0 0 8px; font-size: 18px; }
-.mode-card p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 18px; }
-.mode-btn { margin-top: auto; }
+.mode-card h3 { margin: 0 0 10px; font-size: 18px; font-weight: 800; }
+.mode-card p { color: #8b95a8; font-size: 14px; line-height: 1.55; margin: 0 0 20px; }
+.mode-btn { margin-top: auto; padding: 10px 16px; font-size: 14px; width: fit-content; }
 .mode-btn.blue { background: var(--blue-soft); color: var(--blue); }
 .mode-btn.purple { background: var(--purple-soft); color: var(--purple); }
 .mode-btn.green { background: var(--green-soft); color: #16a34a; }
 .mode-btn.orange { background: var(--orange-soft); color: #d97706; }
 
 .stats-bar {
-  margin: 28px 64px 48px; background: #fff; border: 1px solid var(--line); border-radius: 22px;
-  display: grid; grid-template-columns: repeat(4, 1fr); padding: 18px 8px;
+  margin: 20px 0 32px; background: #fff; border: 1px solid #eef2f7; border-radius: 22px;
+  display: grid; grid-template-columns: repeat(4, 1fr); padding: 20px 8px;
+  box-shadow: 0 8px 24px rgba(47,107,255,.05);
 }
 .stats-bar > div {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  text-align: left; border-right: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  text-align: left; border-right: 1px solid #eef2f7;
 }
 .stats-bar > div:last-child { border: 0; }
-.stats-bar strong { display: block; font-size: 22px; }
-.stats-bar span { color: var(--muted); font-size: 13px; }
+.stats-bar strong { display: block; font-size: 20px; font-weight: 800; }
+.stats-bar span { color: #94a3b8; font-size: 13px; }
 
 .setup-panel {
   background: #fff; border: 1px solid var(--line); border-radius: 24px;
@@ -266,53 +373,75 @@ h2 { font-size: 36px; margin: 0 0 8px; letter-spacing: -0.03em; }
 .duration-card {
   background: #f8fafc; border: 2px solid var(--line); border-radius: 18px;
   padding: 22px 12px; cursor: pointer; font: inherit; color: var(--ink);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
 }
+.duration-card:hover { border-color: #c9d6ee; transform: translateY(-2px); }
 .duration-card strong { display: block; font-size: 28px; letter-spacing: -0.03em; }
 .duration-card span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
 .duration-card.is-on { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
 .duration-card.is-on span { color: var(--blue); }
 .setup-panel .btn-primary { padding: 15px 32px; font-size: 16px; }
 .setup-panel[hidden], #testRun[hidden] { display: none !important; }
-.page-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
+.page-wrap { max-width: 1080px; margin: 0 auto; padding: 36px clamp(16px, 4vw, 28px) 72px; }
+#view-practice .page-wrap { max-width: 1120px; }
 .test-toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
 .chips, .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   border: 1px solid var(--line); background: #fff; border-radius: 999px;
-  padding: 8px 12px; color: var(--muted); font-weight: 600;
+  padding: 9px 16px; color: var(--muted); font-weight: 600;
 }
-.chip.is-on { background: var(--blue-soft); color: var(--blue); border-color: transparent; }
+.chip:hover { border-color: #c9d6ee; color: var(--ink); }
+.chip.is-on { background: var(--blue); color: #fff; border-color: transparent; }
 .test-shell, .practice-panel, .results, .keys-intro {
   background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 22px; box-shadow: var(--shadow);
 }
 .live-bar { display: flex; gap: 18px; align-items: end; flex-wrap: wrap; }
 .live-extras { display: flex; gap: 18px; align-items: end; flex-wrap: wrap; }
 .live-time strong { font-size: 42px; letter-spacing: -0.03em; }
-.test-shell.is-exam .live-extras,
-.test-shell.is-exam .guide-board,
 .test-shell.is-exam .spark,
 .test-shell.is-exam .progress-track,
-.test-shell.is-exam .hint { display: none; }
-.test-shell.is-exam .live-bar { justify-content: center; }
+.test-shell.is-exam .hint,
+.test-shell.is-exam .hands,
+.test-shell.is-exam .guide-meta { display: none; }
 #view-test.is-exam .test-toolbar { display: none; }
 body.is-exam .site-footer { display: none; }
 #view-test.is-exam .page-wrap {
-  max-width: none; margin: 0; padding: 12px 28px 16px;
+  max-width: none; margin: 0; padding: 0;
   min-height: calc(100vh - 74px);
 }
 #view-test.is-exam .test-shell {
-  min-height: calc(100vh - 98px);
+  min-height: calc(100vh - 74px);
   display: flex; flex-direction: column;
-  border-radius: 0; box-shadow: none; padding: 10px 8px 16px;
+  border-radius: 0; box-shadow: none; border: 0;
+  padding: 8px 28px 12px; background: #fff;
 }
+#view-test.is-exam .live-bar {
+  justify-content: center; align-items: center; gap: 48px;
+  padding: 10px 0 6px;
+}
+#view-test.is-exam .live-extras { align-items: center; gap: 40px; }
+#view-test.is-exam .live-metric { text-align: center; min-width: 88px; }
+#view-test.is-exam .live-metric span { font-size: 12px; letter-spacing: .12em; }
+#view-test.is-exam .live-metric strong { font-size: 32px; letter-spacing: -0.03em; }
+#view-test.is-exam .live-time strong { font-size: 32px; color: var(--blue); }
 #view-test.is-exam .type-stage {
   flex: 1;
-  min-height: 0;
+  min-height: 180px;
   max-height: none;
   overflow: auto;
   font-size: 28px;
-  line-height: 1.85;
-  padding: 18px 20px 48px;
+  line-height: 1.9;
+  padding: 20px 8px 24px;
+  background: transparent; border: 0; border-radius: 0;
 }
+#view-test.is-exam .guide-board {
+  margin: 0; background: #f8fafc; border: 1px solid var(--line);
+  border-radius: 18px; padding: 14px 12px 10px;
+}
+#view-test.is-exam .live-board .key { min-width: 38px; height: 42px; font-size: 13px; font-weight: 700; }
+#view-test.is-exam .live-board .space-key { min-width: 220px; }
+#view-test.is-exam #restartBtn,
+#view-test.is-exam .exam-hide { display: none; }
 .live-metric span, .result-cell span, .preview-meta span {
   display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
 }
@@ -386,10 +515,15 @@ body.is-exam .site-footer { display: none; }
 .letter-btn, .lesson-card {
   border: 1px solid var(--line); background: #fff; border-radius: 16px; padding: 16px;
   text-align: left; font: inherit; cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.lesson-card:hover {
+  transform: translateY(-3px); border-color: #c9d6ee; box-shadow: var(--shadow);
 }
 .letter-btn { aspect-ratio: 1; display: grid; place-items: center; font-weight: 800; font-size: 18px; }
-.letter-card strong { font-size: 22px; }
-.lesson-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 24px; }
+.letter-card strong { font-size: 22px; display: block; letter-spacing: -0.03em; }
+.letter-card.is-on { box-shadow: 0 8px 24px rgba(47,107,255,.16); }
+.lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; margin-bottom: 24px; }
 .lesson-card strong { display: block; }
 .lesson-card span, .lesson-card em { color: var(--muted); font-style: normal; font-size: 12px; }
 .subhead { margin: 28px 0 8px; }
@@ -423,21 +557,23 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
 .faq p { color: var(--muted); line-height: 1.6; }
 
 .site-footer {
-  background: #111827; color: #cbd5e1;
-  display: grid; grid-template-columns: 1.2fr 1.6fr .8fr; gap: 12px;
-  align-items: center; padding: 22px 48px 18px;
+  background: #0f172a; color: #94a3b8;
+  display: grid; grid-template-columns: 1.1fr 1.8fr 1fr; gap: 16px;
+  align-items: center; padding: 18px clamp(28px, 6vw, 104px);
 }
 .foot-left { display: flex; align-items: center; gap: 10px; }
-.foot-left strong { display: block; color: #60a5fa; }
-.foot-left small { font-size: 11px; }
-.foot-nav { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.foot-nav button { background: none; border: 0; color: #cbd5e1; }
-.foot-social { display: flex; gap: 10px; justify-content: flex-end; }
+.foot-left strong { display: block; color: #60a5fa; font-size: 16px; }
+.foot-left small { font-size: 11px; color: #64748b; }
+.foot-nav { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
+.foot-nav button { background: none; border: 0; color: #94a3b8; font-size: 14px; font-weight: 600; }
+.foot-nav button:hover { color: #fff; }
+.foot-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.foot-social { display: flex; gap: 8px; justify-content: flex-end; }
 .foot-social span {
   width: 28px; height: 28px; border-radius: 50%; border: 1px solid #334155;
   display: grid; place-items: center; font-size: 11px;
 }
-.copy { grid-column: 1 / -1; text-align: right; margin: 0; font-size: 12px; color: #94a3b8; }
+.copy { margin: 0; font-size: 12px; color: #64748b; }
 
 .modal[hidden] { display: none; }
 .modal {
@@ -452,21 +588,55 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit;
 }
 
+@media (max-width: 1180px) {
+  .studio-guide { grid-template-columns: 1fr; }
+  .hand-card { max-width: 360px; margin: 0 auto; }
+  .mode-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 980px) {
-  .site-header { padding: 12px 16px; flex-wrap: wrap; }
-  .main-nav { order: 3; width: 100%; overflow: auto; }
-  .hero, .features, .studio-wrap { padding-left: 16px; padding-right: 16px; }
-  .hero, .features, .split { grid-template-columns: 1fr; }
-  .hero-art { min-height: 240px; }
+  .site-header { padding: 10px 16px; flex-wrap: wrap; gap: 10px; }
+  .main-nav { order: 3; width: 100%; overflow: auto; padding-bottom: 4px; }
+  .hero { grid-template-columns: 1fr; text-align: left; gap: 16px; padding: 16px clamp(28px, 6vw, 104px) 0; }
+  .features { grid-template-columns: repeat(2, 1fr); }
+  .split { grid-template-columns: 1fr; }
+  .hero-art { min-height: 0; justify-content: center; }
   .studio-wrap { margin: 8px 16px 32px; grid-template-columns: 1fr; }
   .studio-side { flex-direction: row; overflow: auto; }
-  .studio-guide { grid-template-columns: 1fr; }
   .studio-time { margin-left: 0; }
-  .letter-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .stats-bar > div { border-right: 0; padding: 10px 0; }
+  .letter-grid, .lesson-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .duration-grid { grid-template-columns: repeat(2, 1fr); }
   .site-footer { grid-template-columns: 1fr; text-align: center; }
+  .foot-right { align-items: center; }
   .foot-social, .copy, .foot-nav { justify-content: center; }
-  .hands { display: none; }
+  .hands, .kw-hands, .kb-hands { display: none; }
+  .kw-board { padding-bottom: 12px; overflow-x: auto; }
+  .prac-tabs { width: 100%; }
+  .page-wrap { padding: 24px 16px 48px; }
+}
+
+@media (max-width: 720px) {
+  .logo-text small { display: none; }
+  .hero-cta { flex-direction: column; align-items: stretch; }
+  .hero-cta .btn-primary, .hero-cta .btn-secondary { width: 100%; justify-content: center; }
+  .features { grid-template-columns: 1fr; }
+  .mode-grid, .stats-bar { grid-template-columns: 1fr; }
+  .score-hero strong { font-size: 52px; }
+  .studio-board .key, .kw-board .key { min-width: 28px; height: 34px; font-size: 11px; }
+  .kw-board .key.space-key, .studio-board .key.space-key { min-width: 120px; }
+  .kw-prompt, .studio-prompt { font-size: 18px; }
+  #view-test.is-exam .type-stage { font-size: 20px; padding: 12px 8px 32px; }
+  .header-actions .btn-login, .header-actions .btn-signup { padding: 8px 12px; font-size: 13px; }
+}
+
+@media (max-width: 520px) {
+  h1 { font-size: 32px; }
+  .page-wrap > h1, .setup-panel h1 { font-size: 26px; }
+  .duration-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .result-actions { flex-direction: column; }
+  .result-actions .btn-primary, .result-actions .btn-secondary { width: 100%; }
 }
 
   </style>
@@ -486,13 +656,22 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       </span>
       <span class="logo-text">
         <strong>TypeFast</strong>
-        <small>Practice · Improve · Type Faster</small>
+        <small>Practice • Improve • Type Faster</small>
       </span>
     </a>
     <nav class="main-nav">
       <button class="nav-btn is-active" data-nav="home">Home</button>
       <button class="nav-btn" data-nav="test">Typing Test</button>
-      <button class="nav-btn" data-nav="practice">Practice</button>
+      <div class="nav-drop">
+        <button class="nav-btn" data-nav="practice">Practice</button>
+        <div class="nav-menu">
+          <button type="button" data-prac-go="letter">Letter tests</button>
+          <button type="button" data-prac-go="key">Key tests</button>
+          <button type="button" data-prac-go="keyword">Keyword tests</button>
+          <button type="button" data-prac-go="lesson">Guided lessons</button>
+          <button type="button" data-prac-go="custom">Custom text</button>
+        </div>
+      </div>
       <button class="nav-btn" data-nav="history">Leaderboard</button>
       <button class="nav-btn" data-nav="faq">About</button>
     </nav>
@@ -515,93 +694,40 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
           <div class="hero-cta">
             <button class="btn-primary" id="heroStart">Start Typing Test →</button>
             <button class="btn-secondary" data-nav="practice">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z" stroke="#2F6BFF" stroke-width="2"/><path d="M5 4a3 3 0 013-3h8" stroke="#2F6BFF" stroke-width="2"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 4h9a3 3 0 013 3v13H9a3 3 0 01-3-3V4z" stroke="#2F6BFF" stroke-width="1.8"/><path d="M6 4a3 3 0 013-3h7" stroke="#2F6BFF" stroke-width="1.8"/><path d="M10 9h6M10 13h6" stroke="#2F6BFF" stroke-width="1.6" stroke-linecap="round"/></svg>
               Explore Practice
             </button>
           </div>
         </div>
-        <div class="hero-art" aria-hidden="true">
-          <svg class="hero-svg" viewBox="0 0 640 460" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="360" cy="230" rx="250" ry="190" fill="#E8F1FF"/>
-            <rect x="118" y="28" width="360" height="248" rx="18" fill="#2B3345"/>
-            <rect x="132" y="42" width="332" height="208" rx="10" fill="#F7FAFF"/>
-            <text x="168" y="72" fill="#9AA6B8" font-size="11" font-family="Plus Jakarta Sans, sans-serif">Time</text>
-            <text x="278" y="72" fill="#9AA6B8" font-size="11" font-family="Plus Jakarta Sans, sans-serif">WPM</text>
-            <text x="378" y="72" fill="#9AA6B8" font-size="11" font-family="Plus Jakarta Sans, sans-serif">Accuracy</text>
-            <text x="168" y="96" fill="#1B2437" font-size="18" font-weight="700" font-family="Plus Jakarta Sans, sans-serif">00:60</text>
-            <text x="286" y="96" fill="#1B2437" font-size="18" font-weight="700" font-family="Plus Jakarta Sans, sans-serif">0</text>
-            <text x="378" y="96" fill="#1B2437" font-size="18" font-weight="700" font-family="Plus Jakarta Sans, sans-serif">100%</text>
-            <text x="168" y="150" fill="#5B6578" font-size="16" font-family="Plus Jakarta Sans, sans-serif">The quick brown fox jumps over</text>
-            <text x="168" y="176" fill="#5B6578" font-size="16" font-family="Plus Jakarta Sans, sans-serif">the lazy dog.</text>
-            <rect x="268" y="162" width="2" height="16" fill="#2F6BFF">
-              <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
-            </rect>
-            <path d="M108 276h380c8 0 18 8 18 18v10H90v-10c0-10 10-18 18-18z" fill="#D7DEE8"/>
-            <rect x="90" y="300" width="416" height="22" rx="8" fill="#C9D3E2"/>
-            <g fill="#B7C3D4">
-              <rect x="130" y="306" width="18" height="8" rx="2"/>
-              <rect x="154" y="306" width="18" height="8" rx="2"/>
-              <rect x="178" y="306" width="18" height="8" rx="2"/>
-              <rect x="202" y="306" width="18" height="8" rx="2"/>
-              <rect x="226" y="306" width="18" height="8" rx="2"/>
-              <rect x="250" y="306" width="18" height="8" rx="2"/>
-              <rect x="274" y="306" width="18" height="8" rx="2"/>
-              <rect x="298" y="306" width="18" height="8" rx="2"/>
-              <rect x="322" y="306" width="18" height="8" rx="2"/>
-              <rect x="346" y="306" width="18" height="8" rx="2"/>
-              <rect x="370" y="306" width="18" height="8" rx="2"/>
-              <rect x="394" y="306" width="18" height="8" rx="2"/>
-              <rect x="418" y="306" width="44" height="8" rx="2"/>
-            </g>
-            <path d="M70 318c28-6 70-6 96 10 10 6 18 16 16 28-2 14-18 20-36 18-30-4-54-8-80-4-16 2-28-10-24-24 4-12 16-24 28-28z" fill="#1E3A8A"/>
-            <path d="M118 338c18 2 40 8 52 22 6 8 4 18-6 22-16 6-38 2-56-8-14-8-22-18-18-28 4-10 16-10 28-8z" fill="#F0C7A6"/>
-            <ellipse cx="148" cy="372" rx="28" ry="12" fill="#E8B992"/>
-            <path d="M470 318c-28-6-70-6-96 10-10 6-18 16-16 28 2 14 18 20 36 18 30-4 54-8 80-4 16 2 28-10 24-24-4-12-16-24-28-28z" fill="#1E3A8A"/>
-            <path d="M422 338c-18 2-40 8-52 22-6 8-4 18 6 22 16 6 38 2 56-8 14-8 22-18 18-28-4-10-16-10-28-8z" fill="#F0C7A6"/>
-            <ellipse cx="392" cy="372" rx="28" ry="12" fill="#E8B992"/>
-            <ellipse cx="148" cy="356" rx="7" ry="5" fill="#E8B992"/>
-            <ellipse cx="132" cy="352" rx="6" ry="5" fill="#E8B992"/>
-            <ellipse cx="164" cy="354" rx="6" ry="5" fill="#E8B992"/>
-            <ellipse cx="392" cy="356" rx="7" ry="5" fill="#E8B992"/>
-            <ellipse cx="408" cy="352" rx="6" ry="5" fill="#E8B992"/>
-            <ellipse cx="376" cy="354" rx="6" ry="5" fill="#E8B992"/>
-            <path d="M528 210c18-42 8-78-6-96 22 8 38 40 30 84-4 22-18 40-36 48 18-8 28-22 12-36z" fill="#3DDC97"/>
-            <path d="M548 168c-8-36-28-58-46-64 24 14 40 44 38 78 0 18-8 34-22 44 22-10 36-32 30-58z" fill="#22C55E"/>
-            <path d="M500 200c12-38 2-70-16-86 20 16 32 48 24 82-4 18-16 32-32 40 18-8 28-20 24-36z" fill="#16A34A"/>
-            <rect x="516" y="248" width="44" height="42" rx="6" fill="#EEF3FA"/>
-            <rect x="510" y="244" width="56" height="10" rx="5" fill="#E4EAF4"/>
-            <rect x="572" y="268" width="48" height="52" rx="10" fill="#1D4ED8"/>
-            <path d="M620 284c12 0 12 28 0 32" stroke="#1D4ED8" stroke-width="8" fill="none"/>
-            <path d="M586 248c0-10 8-18 8-28" stroke="#C7D2FE" stroke-width="4" stroke-linecap="round"/>
-            <path d="M598 252c0-12 6-20 6-30" stroke="#C7D2FE" stroke-width="4" stroke-linecap="round"/>
-          </svg>
+        <div class="hero-art">
+          <img class="hero-img" src="img/hero-typing.png" alt="Person typing on a laptop with Time, WPM and Accuracy on screen">
         </div>
       </div>
 
       <div class="features">
         <div class="feature">
-          <span class="ico green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" fill="#fff"/></svg></span>
+          <span class="ico green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h7l-1 8 10-14h-7z" fill="#fff"/></svg></span>
           <div>
             <h3>Track Your Progress</h3>
             <p>See your WPM, accuracy and improvement over time.</p>
           </div>
         </div>
         <div class="feature">
-          <span class="ico purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#fff"/></svg></span>
+          <span class="ico purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.5" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="#fff"/></svg></span>
           <div>
             <h3>Multiple Test Modes</h3>
             <p>Choose from different time limits, text types and difficulty levels.</p>
           </div>
         </div>
         <div class="feature">
-          <span class="ico orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 18V10h4v8H4zm6 0V6h4v12h-4zm6 0v-6h4v6h-4z" fill="#fff"/></svg></span>
+          <span class="ico orange"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19V11h4v8H4zm6 0V5h4v14h-4zm6 0v-6h4v6h-4z" fill="#fff"/></svg></span>
           <div>
             <h3>Detailed Results</h3>
             <p>Get instant feedback with clear performance stats.</p>
           </div>
         </div>
         <div class="feature">
-          <span class="ico pink"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 4h10v6a5 5 0 01-10 0V4z" fill="#fff"/><path d="M17 5h3a3 3 0 010 6h-2" stroke="#fff" stroke-width="2"/><path d="M8 18h8v2H8z" fill="#fff"/></svg></span>
+          <span class="ico pink"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M8 4h8v5a4 4 0 01-8 0V4z" fill="#fff"/><path d="M16 5.5h2.5a2.2 2.2 0 010 4.4H16" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M12 13v4M8 21h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></span>
           <div>
             <h3>Compete & Improve</h3>
             <p>Climb the leaderboard and challenge yourself.</p>
@@ -609,122 +735,55 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
         </div>
       </div>
 
-      <div class="studio-wrap" id="homeStudio">
-        <aside class="studio-side">
-          <button class="side-item is-on" data-nav="test">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="3" stroke="currentColor" stroke-width="2"/><path d="M7 10h2M11 10h2M15 10h2M8 14h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Typing Test
-          </button>
-          <button class="side-item" data-nav="practice">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z" stroke="currentColor" stroke-width="2"/><path d="M5 4a3 3 0 013-3h8" stroke="currentColor" stroke-width="2"/></svg>
-            Practice
-          </button>
-          <button class="side-item" data-nav="history">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 4h10v6a5 5 0 01-10 0V4z" stroke="currentColor" stroke-width="2"/><path d="M8 18h8v2H8z" fill="currentColor"/></svg>
-            Leaderboard
-          </button>
-          <button class="side-item" id="studioSettings">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Settings
-          </button>
-        </aside>
-        <div class="studio-main">
-          <div class="studio-top">
-            <label class="studio-select">
-              <select id="studioDiff" aria-label="Difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </label>
-            <label class="studio-select">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7V3z" stroke="currentColor" stroke-width="2"/><path d="M14 3v6h6" stroke="currentColor" stroke-width="2"/></svg>
-              <select id="studioText" aria-label="Text type">
-                <option value="normal">Normal Text</option>
-                <option value="quotes">Quotes</option>
-                <option value="tech">Technology</option>
-                <option value="nature">Nature</option>
-              </select>
-            </label>
-            <label class="studio-select studio-time">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              <select id="studioDur" aria-label="Duration">
-                <option value="30">00:30</option>
-                <option value="60" selected>01:00</option>
-                <option value="120">02:00</option>
-                <option value="180">03:00</option>
-                <option value="300">05:00</option>
-              </select>
-            </label>
-          </div>
-          <div class="studio-prompt" id="studioPrompt"></div>
-          <div class="studio-guide">
-            <div class="hand-card left">
-              <h4>Left Hand (A S D F)</h4>
-              <div class="hand-keys">
-                <span class="hand-key">A</span>
-                <span class="hand-key">S</span>
-                <span class="hand-key">D</span>
-                <span class="hand-key">F</span>
-              </div>
-              <div class="finger-map">
-                <span><i class="dot lp"></i>Little<br>(Left Pinky)</span>
-                <span><i class="dot lr"></i>Ring<br>(Left Ring)</span>
-                <span><i class="dot lm"></i>Middle<br>(Left Middle)</span>
-                <span><i class="dot li"></i>Index<br>(Left Index)</span>
-              </div>
-            </div>
-            <div class="studio-board-wrap">
-              <div class="studio-board" id="studioBoard"></div>
-              <svg class="kb-hands" viewBox="0 0 440 150" aria-hidden="true">
-                <path d="M118 18c6 22 10 40 8 62-8 4-16 6-22 2 2-22 4-42-2-62 5-4 10-4 16-2z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
-                <path d="M148 8c4 28 6 50 4 70-8 2-14 0-18-6 4-22 6-44 0-64 5-4 10-4 14 0z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
-                <path d="M176 4c2 30 2 54 0 74-8 0-14-4-16-10 4-22 6-46 2-66 5-2 10-2 14 2z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
-                <path d="M204 10c0 28-2 52-6 70-8-2-12-8-12-14 6-20 8-42 6-62 4-2 9 0 12 6z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
-                <path d="M132 78c18 18 40 28 58 26 4 8-2 18-14 22-28 4-54-8-70-24 4-12 14-20 26-24z" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
-                <path d="M322 18c-6 22-10 40-8 62 8 4 16 6 22 2-2-22-4-42 2-62-5-4-10-4-16-2z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
-                <path d="M292 8c-4 28-6 50-4 70 8 2 14 0 18-6-4-22-6-44 0-64-5-4-10-4-14 0z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
-                <path d="M264 4c-2 30-2 54 0 74 8 0 14-4 16-10-4-22-6-46-2-66-5-2-10-2-14 2z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
-                <path d="M236 10c0 28 2 52 6 70 8-2 12-8 12-14-6-20-8-42-6-62-4-2-9 0-12 6z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
-                <path d="M308 78c-18 18-40 28-58 26-4 8 2 18 14 22 28 4 54-8 70-24-4-12-14-20-26-24z" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="hand-card right">
-              <h4>Right Hand (J K L ;)</h4>
-              <div class="hand-keys">
-                <span class="hand-key">J</span>
-                <span class="hand-key">K</span>
-                <span class="hand-key">L</span>
-                <span class="hand-key">;</span>
-              </div>
-              <div class="finger-map">
-                <span><i class="dot ri"></i>Index<br>(Right Index)</span>
-                <span><i class="dot rm"></i>Middle<br>(Right Middle)</span>
-                <span><i class="dot rr"></i>Ring<br>(Right Ring)</span>
-                <span><i class="dot rp"></i>Little<br>(Right Pinky)</span>
-              </div>
-            </div>
-          </div>
-          <input class="studio-input" id="studioInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here...">
-          <div class="studio-foot">
-            <div class="studio-metric">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#64748b" stroke-width="2"/><path d="M12 8v5l3 2" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>
-              <div><strong id="studioWpm">0</strong><span>WPM</span></div>
-            </div>
-            <div class="studio-metric ok">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#22c55e" stroke-width="2"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>
-              <div><strong id="studioAcc">100%</strong><span>Accuracy</span></div>
-            </div>
-            <div class="studio-metric">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#2F6BFF" stroke-width="2"/><path d="M12 8v5l3 2" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round"/></svg>
-              <div><strong id="studioTime">00:60</strong><span>Time Left</span></div>
-            </div>
-            <button class="btn-primary studio-reset" id="studioReset">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0114-5M20 12a8 8 0 01-14 5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M18 4v5h-5M6 20v-5h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-              Reset
-            </button>
-          </div>
+      <div class="modes">
+        <p class="section-kicker">CHOOSE YOUR TEST</p>
+        <h2>Start Practicing Today</h2>
+        <p class="section-sub">Select a mode that suits your goal and begin your typing journey.</p>
+        <div class="mode-grid">
+          <article class="mode-card">
+            <span class="mode-ico blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#2F6BFF" stroke-width="2"/><path d="M12 7.5v5.2l3.2 1.8" stroke="#2F6BFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <h3>Time Based Test</h3>
+            <p>Type for a fixed time (e.g. 1, 2 or 5 minutes) and see your speed and accuracy.</p>
+            <button class="mode-btn blue" data-nav="test">Start Test →</button>
+          </article>
+          <article class="mode-card">
+            <span class="mode-ico purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M8 4h6l4 4v12H8V4z" stroke="#7b5cff" stroke-width="1.8"/><path d="M14 4v4h4" stroke="#7b5cff" stroke-width="1.8"/><path d="M10 12h6M10 16h4" stroke="#7b5cff" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+            <h3>Word Based Test</h3>
+            <p>Type a set number of words and improve your accuracy.</p>
+            <button class="mode-btn purple" data-prac-go="keyword">Start Test →</button>
+          </article>
+          <article class="mode-card">
+            <span class="mode-ico green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 8h10a3 3 0 013 3v5a3 3 0 01-3 3H7a3 3 0 01-3-3v-5a3 3 0 013-3z" stroke="#16a34a" stroke-width="1.8"/><path d="M9 8V6.5A2.5 2.5 0 0111.5 4h1A2.5 2.5 0 0115 6.5V8" stroke="#16a34a" stroke-width="1.8"/><circle cx="9" cy="13.5" r="1.1" fill="#16a34a"/><circle cx="15" cy="13.5" r="1.1" fill="#16a34a"/></svg></span>
+            <h3>Custom Text Practice</h3>
+            <p>Choose from different topics like news, quotes, tech and more.</p>
+            <button class="mode-btn green" data-prac-go="custom">Start Practice →</button>
+          </article>
+          <article class="mode-card">
+            <span class="mode-ico orange"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 18V11h3.4v7H5zm5.3 0V6h3.4v12h-3.4zm5.3 0v-5h3.4v5H15.6z" fill="#f59e0b"/></svg></span>
+            <h3>Difficulty Levels</h3>
+            <p>Beginners to Advanced — pick a level that matches your skill.</p>
+            <button class="mode-btn orange" data-nav="test">Select Level →</button>
+          </article>
         </div>
+
+      <div class="stats-bar">
+        <div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M9 11a3 3 0 100-6 3 3 0 000 6zM16.5 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" fill="#2F6BFF"/><path d="M2.5 19c.4-3 2.8-5 6.5-5s6.1 2 6.5 5M14 16.2c1.9-.4 3.8.4 4.8 2.8" stroke="#2F6BFF" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <div><strong>10,000+</strong><span>Active Users</span></div>
+        </div>
+        <div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#7b5cff" stroke-width="1.8"/><path d="M12 7.8v4.8l3 1.7" stroke="#7b5cff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <div><strong>75+ WPM</strong><span>Top Speed</span></div>
+        </div>
+        <div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#2F6BFF" stroke-width="1.8"/><circle cx="12" cy="12" r="4.2" stroke="#2F6BFF" stroke-width="1.8"/><circle cx="12" cy="12" r="1.5" fill="#2F6BFF"/></svg>
+          <div><strong>98%</strong><span>Best Accuracy</span></div>
+        </div>
+        <div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.2 6.4H21l-5.4 3.9 2 6.4L12 16.6 6.4 19.7l2-6.4L3 9.4h6.8L12 3z" fill="#f59e0b"/></svg>
+          <div><strong>4.8/5</strong><span>User Rating</span></div>
+        </div>
+      </div>
       </div>
     </section>
 
@@ -753,8 +812,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
             <div class="live-extras">
               <div class="live-metric"><span>WPM</span><strong id="liveWpm">0</strong></div>
               <div class="live-metric"><span>Accuracy</span><strong id="liveAcc">100%</strong></div>
-              <div class="live-metric"><span>Errors</span><strong id="liveErr">0</strong></div>
-              <button class="btn-ghost" id="restartBtn">Restart</button>
+              <div class="live-metric exam-hide"><span>Errors</span><strong id="liveErr">0</strong></div>
+              <button class="btn-ghost exam-hide" id="restartBtn">Restart</button>
             </div>
           </div>
           <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -846,16 +905,47 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
     <section id="view-practice" class="view">
       <div class="page-wrap">
         <p class="section-kicker">PRACTICE</p>
-        <h1>Letter, key and keyword drills</h1>
-        <p class="section-sub">Pick a letter or key drill to start. Choose a time, then type.</p>
-        <h3 class="subhead">Letter tests</h3>
-        <p class="section-sub">Tap a letter. You will type real words that use that letter, same as a keyword test.</p>
+        <h1 id="pracHeading">Letter tests</h1>
+        <p class="section-sub" id="pracSub">Tap a letter. Then type its words on the keyword layout below.</p>
+        <div class="prac-tabs" id="pracTabs">
+          <button type="button" class="chip is-on" data-prac-go="letter">Letter tests</button>
+          <button type="button" class="chip" data-prac-go="key">Key tests</button>
+          <button type="button" class="chip" data-prac-go="keyword">Keyword tests</button>
+          <button type="button" class="chip" data-prac-go="lesson">Guided lessons</button>
+          <button type="button" class="chip" data-prac-go="custom">Custom text</button>
+        </div>
+        <div class="prac-pane is-on" data-prac-pane="letter">
         <div class="lesson-grid" id="letterGrid"></div>
-        <h3 class="subhead">Key tests</h3>
+        <div class="kw-stage is-idle" id="kwStage" hidden>
+          <div class="kw-head">
+            <button type="button" class="btn-ghost" id="kwBack">← Letters</button>
+            <strong id="kwTitle">Letter practice</strong>
+            <span id="kwHint">Tap a letter to start</span>
+          </div>
+          <div class="kw-prompt" id="kwPrompt">The quick brown fox jumps over the lazy dog.</div>
+          <input class="kw-input" id="kwInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here...">
+          <div class="kw-board" id="keysPreviewBoard"></div>
+          <svg class="kw-hands" viewBox="0 0 440 160" aria-hidden="true">
+            <path d="M118 22c6 24 10 44 8 68-8 4-16 6-22 2 2-24 4-46-2-68 5-4 10-4 16-2z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M148 10c4 30 6 54 4 76-8 2-14 0-18-6 4-24 6-48 0-70 5-4 10-4 14 0z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M176 6c2 32 2 58 0 80-8 0-14-4-16-10 4-24 6-50 2-72 5-2 10-2 14 2z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M204 12c0 30-2 56-6 76-8-2-12-8-12-14 6-22 8-46 6-68 4-2 9 0 12 6z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M128 86c20 20 44 32 64 28 4 10-4 22-16 26-30 4-58-10-76-28 4-12 16-22 28-26z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M322 22c-6 24-10 44-8 68 8 4 16 6 22 2-2-24-4-46 2-68-5-4-10-4-16-2z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M292 10c-4 30-6 54-4 76 8 2 14 0 18-6-4-24-6-48 0-70-5-4-10-4-14 0z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M264 6c-2 32-2 58 0 80 8 0 14-4 16-10-4-24-6-50-2-72-5-2-10-2-14 2z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M236 12c0 30 2 56 6 76 8-2 12-8 12-14-6-22-8-46-6-68-4-2-9 0-12 6z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M312 86c-20 20-44 32-64 28-4 10 4 22 16 26 30 4 58-10 76-28-4-12-16-22-28-26z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        </div>
+        <div class="prac-pane" data-prac-pane="key" hidden>
         <div class="lesson-grid" id="keyDrillGrid"></div>
-        <h3 class="subhead">Guided lessons</h3>
+        </div>
+        <div class="prac-pane" data-prac-pane="lesson" hidden>
         <div class="lesson-grid" id="lessonGrid"></div>
-        <h3 class="subhead">Custom text</h3>
+        </div>
+        <div class="prac-pane" data-prac-pane="custom" hidden>
         <div class="practice-panel">
           <textarea id="customText" placeholder="Paste your own passage. Leave empty for endless random words."></textarea>
           <div class="chips">
@@ -866,11 +956,9 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
           </div>
           <button class="btn-primary" id="practiceStart">Start practice</button>
         </div>
-        <h3 class="subhead">Keyword tests</h3>
+        </div>
+        <div class="prac-pane" data-prac-pane="keyword" hidden>
         <div class="lesson-grid" id="keywordGrid"></div>
-        <div class="keys-intro">
-          <div class="mini-board" id="keysPreviewBoard"></div>
-          <p class="finger-legend" id="fingerLegend"></p>
         </div>
       </div>
     </section>
@@ -927,7 +1015,7 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       </span>
       <span>
         <strong>TypeFast</strong>
-        <small>Practice · Improve · Type Faster</small>
+        <small>Practice • Improve • Type Faster</small>
       </span>
     </div>
     <nav class="foot-nav">
@@ -938,13 +1026,15 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       <button data-nav="faq">About</button>
       <button data-nav="faq">Contact</button>
     </nav>
-    <div class="foot-social">
-      <span aria-label="Facebook"><svg width="12" height="12" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h2.6l.4-3H13v-2c0-.6.4-1 1-1z"/></svg></span>
-      <span aria-label="Twitter"><svg width="12" height="12" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M22 6.5c-.7.3-1.5.6-2.3.7A4 4 0 0021 5a8 8 0 01-2.5 1 4 4 0 00-6.8 3.6A11.3 11.3 0 013 5.2a4 4 0 001.2 5.3 4 4 0 01-1.8-.5v.1a4 4 0 003.2 3.9 4 4 0 01-1.8.1 4 4 0 003.7 2.8A8 8 0 012 18.4 11.3 11.3 0 008.1 20c7.4 0 11.4-6.1 11.4-11.4v-.5A8 8 0 0022 6.5z"/></svg></span>
-      <span aria-label="Instagram"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#cbd5e1" stroke="none"/></svg></span>
-      <span aria-label="YouTube"><svg width="12" height="12" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M23 12s0-3.4-.4-5c-.2-.8-.8-1.4-1.6-1.6C19.4 5 12 5 12 5s-7.4 0-9 .4c-.8.2-1.4.8-1.6 1.6C1 8.6 1 12 1 12s0 3.4.4 5c.2.8.8 1.4 1.6 1.6 1.6.4 9 .4 9 .4s7.4 0 9-.4c.8-.2 1.4-.8 1.6-1.6.4-1.6.4-5 .4-5z"/><path d="M10 15.5V8.5l6 3.5-6 3.5z" fill="#111827"/></svg></span>
+    <div class="foot-right">
+      <div class="foot-social">
+        <span aria-label="Facebook"><svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h2.6l.4-3H13v-2c0-.6.4-1 1-1z"/></svg></span>
+        <span aria-label="Twitter"><svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M22 6.5c-.7.3-1.5.6-2.3.7A4 4 0 0021 5a8 8 0 01-2.5 1 4 4 0 00-6.8 3.6A11.3 11.3 0 013 5.2a4 4 0 001.2 5.3 4 4 0 01-1.8-.5v.1a4 4 0 003.2 3.9 4 4 0 01-1.8.1 4 4 0 003.7 2.8A8 8 0 012 18.4 11.3 11.3 0 008.1 20c7.4 0 11.4-6.1 11.4-11.4v-.5A8 8 0 0022 6.5z"/></svg></span>
+        <span aria-label="Instagram"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#94a3b8" stroke="none"/></svg></span>
+        <span aria-label="YouTube"><svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M23 12s0-3.4-.4-5c-.2-.8-.8-1.4-1.6-1.6C19.4 5 12 5 12 5s-7.4 0-9 .4c-.8.2-1.4.8-1.6 1.6C1 8.6 1 12 1 12s0 3.4.4 5c.2.8.8 1.4 1.6 1.6 1.6.4 9 .4 9 .4s7.4 0 9-.4c.8-.2 1.4-.8 1.6-1.6.4-1.6.4-5 .4-5z"/><path d="M10 15.5V8.5l6 3.5-6 3.5z" fill="#0f172a"/></svg></span>
+      </div>
+      <p class="copy">© 2025 TypeFast. All rights reserved.</p>
     </div>
-    <p class="copy">© 2026 TypeFast. All rights reserved.</p>
   </footer>
 
   <div class="modal" id="authModal" hidden>
@@ -957,8 +1047,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   </div>
 
   <canvas id="certCanvas" width="1400" height="900" hidden></canvas>
-  <script src="js/texts.js?v=17"></script>
-  <script src="js/engine.js?v=17"></script>
-  <script src="js/app.js?v=17"></script>
+  <script src="js/texts.js?v=39"></script>
+  <script src="js/engine.js?v=39"></script>
+  <script src="js/app.js?v=39"></script>
 </body>
 </html>
