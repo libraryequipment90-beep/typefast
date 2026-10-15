@@ -71,68 +71,120 @@
     test: {
       title: "Free Typing Speed Test | TypeFast WPM Test",
       desc: "Start a timed typing test. Choose 30 seconds to 10 minutes, type the passage, and see your WPM, accuracy and errors when time ends.",
-      path: "/#test",
+      path: "/typing-test/",
       hash: "test"
     },
     results: {
       title: "Typing Test Results | TypeFast WPM Score",
       desc: "See your net WPM, accuracy, errors, consistency and a keyboard heatmap after finishing a TypeFast typing test.",
-      path: "/#results",
+      path: "/typing-test/",
       hash: "results"
     },
     practice: {
       title: "Typing Practice — Letters, Keys and Keywords | TypeFast",
       desc: "Practice typing with letter drills, key tests, keyword lessons and custom text. Learn the right finger for every key.",
-      path: "/#practice",
+      path: "/practice/",
       hash: "practice"
     },
     letter: {
       title: "Letter Typing Practice | TypeFast",
       desc: "Practice one letter at a time on a live keyword layout and learn the right finger for every key.",
-      path: "/#practice-letter",
+      path: "/practice/",
       hash: "practice-letter"
     },
     key: {
       title: "Key Typing Tests | TypeFast",
       desc: "Practice home-row and key-group drills with a timed typing test.",
-      path: "/#practice-key",
+      path: "/practice/",
       hash: "practice-key"
     },
     keyword: {
       title: "Keyword Typing Tests | TypeFast",
       desc: "Practice common word sets and improve accuracy with timed keyword tests.",
-      path: "/#practice-keyword",
+      path: "/practice/",
       hash: "practice-keyword"
     },
     lesson: {
       title: "Guided Typing Lessons | TypeFast",
       desc: "Follow guided typing lessons from home row to full keyboard.",
-      path: "/#practice-lesson",
+      path: "/practice/",
       hash: "practice-lesson"
     },
     custom: {
       title: "Custom Text Typing Practice | TypeFast",
       desc: "Paste your own passage or practice random words, quotes and code.",
-      path: "/#practice-custom",
+      path: "/practice/",
       hash: "practice-custom"
     },
     history: {
       title: "Typing Leaderboard and History | TypeFast",
       desc: "Track your typing scores locally. Compare WPM, accuracy and errors across timed tests on this device.",
-      path: "/#leaderboard",
+      path: "/leaderboard/",
       hash: "leaderboard"
     },
     faq: {
       title: "About TypeFast — Typing Test FAQ",
       desc: "Learn how WPM is measured, what a good typing speed is, and how TypeFast helps you type faster with free tests and drills.",
-      path: "/#about",
+      path: "/about/",
       hash: "about"
     }
   };
 
+  const SITE_ORIGIN = (typeof window !== "undefined" && window.__SITE_ORIGIN__)
+    || ((location.origin && location.origin !== "null") ? location.origin : "https://example.com");
+
+  const PATH_ROUTES = {
+    "/": "home",
+    "/typing-test": "test",
+    "/practice": "practice",
+    "/leaderboard": "history",
+    "/about": "faq"
+  };
+
+  function routeFromPath() {
+    let path = location.pathname || "/";
+    if (!path.endsWith("/")) path += "/";
+    path = path.replace(/\/+$/, "/");
+    return PATH_ROUTES[path] || (PATH_ROUTES[path.replace(/\/$/, "")] || "home");
+  }
+
+  function pathFor(name) {
+    return (SEO[name] && SEO[name].path) || "/";
+  }
+
+  function urlFor(name) {
+    if (typeof PRAC_COPY !== "undefined" && PRAC_COPY[name]) return "/practice/?mode=" + name;
+    return pathFor(name);
+  }
+
+  function navigate(path) {
+    if (!path) return;
+    if (location.pathname + location.search === path) return;
+    try {
+      history.pushState(null, "", path);
+    } catch (err) {
+      location.hash = path;
+    }
+  }
+
+  function navigated() {
+    const name = routeFromPath();
+    const params = new URLSearchParams(location.search);
+    if (name === "test") { openTimedSetup({ mode: "timed" }); return; }
+    if (name === "history") paintHistory();
+    if (name === "practice") {
+      paintKeysPage();
+      show(name, { silentHash: true });
+      const pane = params.get("mode");
+      showPracPane(pane && PRAC_COPY[pane] ? pane : currentPrac || "letter", { keepUrl: true });
+      return;
+    }
+    show(name, { silentHash: true });
+  }
+
   function applySeo(name) {
     const page = SEO[name] || SEO.home;
-    const origin = (location.origin && location.origin !== "null") ? location.origin : "https://typefast.app";
+    const origin = SITE_ORIGIN;
     const url = origin + (page.path === "/" ? "/" : page.path);
     document.title = page.title;
     const desc = document.querySelector('meta[name="description"]');
@@ -142,8 +194,10 @@
     set("ogTitle", "content", page.title);
     set("ogDesc", "content", page.desc);
     set("ogUrl", "content", url);
+    set("ogImage", "content", origin + "/og-image.png");
     set("twTitle", "content", page.title);
     set("twDesc", "content", page.desc);
+    set("twImage", "content", origin + "/og-image.png");
     const ld = $("ldJson");
     if (ld) {
       const graph = {
@@ -205,10 +259,7 @@
     document.body.classList.toggle("is-exam", name === "test" && views.test && views.test.classList.contains("is-exam"));
     if (name !== "practice") hideKwStage();
     applySeo(name);
-    if (!opts.silentHash) {
-      const hash = (SEO[name] && SEO[name].hash) || name;
-      if (location.hash.replace("#", "") !== hash) history.replaceState(null, "", "#" + hash);
-    }
+    if (!opts.silentHash) navigate(pathFor(name));
     window.scrollTo(0, 0);
   }
 
@@ -970,7 +1021,7 @@
     custom: { title: "Custom text", sub: "Paste your own passage or start random words, quotes, or code." }
   };
 
-  function showPracPane(id) {
+  function showPracPane(id, opts = {}) {
     const pane = id && PRAC_COPY[id] ? id : "letter";
     currentPrac = pane;
     document.querySelectorAll(".prac-pane").forEach((el) => {
@@ -985,8 +1036,7 @@
     if ($("pracHeading")) $("pracHeading").textContent = copy.title;
     if ($("pracSub")) $("pracSub").textContent = copy.sub;
     hideKwStage();
-    const hash = "practice-" + pane;
-    if (location.hash.replace("#", "") !== hash) history.replaceState(null, "", "#" + hash);
+    if (!opts.keepUrl) navigate("/practice/?mode=" + pane);
     applySeo(pane);
   }
 
@@ -1283,24 +1333,24 @@
       });
     }
     document.addEventListener("keydown", onKey);
+    window.addEventListener("popstate", navigated);
     window.addEventListener("hashchange", () => {
-      const raw = (location.hash || "#home").replace("#", "") || "home";
-      const paneFromHash = raw.indexOf("practice-") === 0 ? raw.slice(9) : (raw === "keys" ? "key" : raw === "lessons" ? "lesson" : "");
-      const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice", letter: "practice", key: "practice", keyword: "practice", lesson: "practice", custom: "practice", "practice-letter": "practice", "practice-key": "practice", "practice-keyword": "practice", "practice-lesson": "practice", "practice-custom": "practice" };
-      const name = map[raw] || raw;
-      if (name === "test") {
-        openTimedSetup({ mode: "timed" });
-        return;
-      }
-      if (name === "history") paintHistory();
-      if (name === "practice") {
-        paintKeysPage();
-        show(name, { silentHash: true });
-        showPracPane(paneFromHash && PRAC_COPY[paneFromHash] ? paneFromHash : currentPrac || "letter");
-        return;
-      }
-      show(name, { silentHash: true });
+      if (!location.hash || location.hash === "#") return;
+      navigate(urlFor(legacyHashToName(location.hash)));
     });
+  }
+
+  function legacyHashToName(hash) {
+    const raw = (hash || "").replace(/^#/, "") || "home";
+    const pane = raw.indexOf("practice-") === 0 ? raw.slice(9) : (raw === "keys" ? "key" : raw === "lessons" ? "lesson" : "");
+    const map = {
+      about: "faq", leaderboard: "history", lessons: "practice", keys: "practice",
+      letter: "practice", key: "practice", keyword: "practice", lesson: "practice",
+      custom: "practice", "practice-letter": "letter", "practice-key": "key",
+      "practice-keyword": "keyword", "practice-lesson": "lesson", "practice-custom": "custom"
+    };
+    if (pane && PRAC_COPY[pane]) return pane;
+    return map[raw] || raw;
   }
 
   try { paintSetupDurations(); } catch (err) {}
@@ -1312,23 +1362,22 @@
   try { bind(); } catch (err) {}
   const savedUser = localStorage.getItem("typefast-user");
   if (savedUser && $("loginBtn")) $("loginBtn").textContent = savedUser;
-  const bootHash = (location.hash || "").replace("#", "");
-  if (bootHash && bootHash !== "home") {
-    const paneFromHash = bootHash.indexOf("practice-") === 0 ? bootHash.slice(9) : (bootHash === "keys" ? "key" : bootHash === "lessons" ? "lesson" : "");
-    const map = { about: "faq", leaderboard: "history", lessons: "practice", keys: "practice", letter: "practice", key: "practice", keyword: "practice", lesson: "practice", custom: "practice", "practice-letter": "practice", "practice-key": "practice", "practice-keyword": "practice", "practice-lesson": "practice", "practice-custom": "practice" };
-    const name = map[bootHash] || bootHash;
-    if (name === "test") openTimedSetup({ mode: "timed" });
-    else {
-      if (name === "history") paintHistory();
-      if (name === "practice") {
-        paintKeysPage();
-        show(name, { silentHash: true });
-        showPracPane(paneFromHash && PRAC_COPY[paneFromHash] ? paneFromHash : "letter");
-      } else {
-        show(name, { silentHash: true });
-      }
-    }
+  const bootName = routeFromPath();
+  const bootPane = new URLSearchParams(location.search).get("mode");
+  const legacyHash = (location.hash || "").replace(/^#/, "");
+  if (bootName === "home" && legacyHash && legacyHash !== "home") {
+    history.replaceState(null, "", urlFor(legacyHashToName("#" + legacyHash)));
+    navigated();
+  } else if (bootName === "test") {
+    openTimedSetup({ mode: "timed" });
+  } else if (bootName === "history") {
+    paintHistory();
+    show("history", { silentHash: true });
+  } else if (bootName === "practice") {
+    paintKeysPage();
+    show("practice", { silentHash: true });
+    showPracPane(bootPane && PRAC_COPY[bootPane] ? bootPane : "letter", { keepUrl: true });
   } else {
-    applySeo("home");
+    show(bootName, { silentHash: true });
   }
 })();

@@ -1,0 +1,11 @@
+{
+  "name": "typefast",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TypeFast — free typing test, WPM tracking and practice drills.",
+  "type": "module",
+  "scripts": {
+    "seo:build": "node scripts/build-seo.mjs",
+    "seo:og": "python3 scripts/gen-og.py"
+  }
+}

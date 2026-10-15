@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://typefast.app/sitemap.xml
+Sitemap: https://example.com/sitemap.xml
