@@ -58,7 +58,8 @@
     results: $("view-results"),
     practice: $("view-practice"),
     history: $("view-history"),
-    faq: $("view-faq")
+    faq: $("view-faq"),
+    game: $("view-game")
   };
 
   const SEO = {
@@ -127,6 +128,12 @@
       desc: "Learn how WPM is measured, what a good typing speed is, and how TypeFast helps you type faster with free tests and drills.",
       path: "/#about",
       hash: "about"
+    },
+    game: {
+      title: "Type a Balloon — Fun Typing Game | TypeFast",
+      desc: "Play Type a Balloon, a free typing game. Type the letter on each floating balloon to pop it and build your speed and accuracy.",
+      path: "/#game",
+      hash: "game"
     }
   };
 
@@ -202,12 +209,14 @@
     });
     const view = views[name] || views.home;
     view.classList.add("is-active");
+    document.body.classList.toggle("is-home", name === "home");
     document.body.classList.toggle("is-exam", name === "test" && views.test && views.test.classList.contains("is-exam"));
+    if (name === "game") balloonGame.open(); else balloonGame.close();
     if (name !== "practice") hideKwStage();
     applySeo(name);
     if (!opts.silentHash) {
       const hash = (SEO[name] && SEO[name].hash) || name;
-      if (location.hash.replace("#", "") !== hash) history.replaceState(null, "", "#" + hash);
+      if (location.hash.replace("#", "") !== hash) window.history.replaceState(null, "", "#" + hash);
     }
     window.scrollTo(0, 0);
   }
@@ -679,8 +688,13 @@
       e.preventDefault();
       if ($("focusVeil")) $("focusVeil").classList.add("is-hidden");
       if (!state.running) beginTicker();
+      const target = state.chars[state.index];
+      const hit = e.key.length === 1 && target && e.key === target.ch;
       Engine.feed(state, e.key);
-      if (soundOn && e.key.length === 1 && audio) audio.click();
+      if (soundOn && e.key.length === 1 && audio && target) {
+        if (hit) audio.correct();
+        else audio.wrong();
+      }
       paintTyped();
       liveStats();
       if (state.finished) onFinish();
@@ -808,23 +822,349 @@
 
   function makeAudio() {
     let ctx = null;
-    function click() {
+    function ensure() {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === "suspended") ctx.resume();
+      return ctx;
+    }
+    function correct() {
       try {
-        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "square";
-        o.frequency.value = 410;
-        g.gain.value = 0.03;
+        const c = ensure();
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = "sawtooth";
+        o.frequency.setValueAtTime(190, c.currentTime);
+        o.frequency.exponentialRampToValueAtTime(110, c.currentTime + 0.12);
+        g.gain.setValueAtTime(0.0001, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.08, c.currentTime + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.16);
         o.connect(g);
-        g.connect(ctx.destination);
+        g.connect(c.destination);
         o.start();
-        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.03);
-        o.stop(ctx.currentTime + 0.03);
+        o.stop(c.currentTime + 0.17);
       } catch {}
     }
-    return { click };
+    function wrong() {
+      try {
+        const c = ensure();
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = "triangle";
+        o.frequency.setValueAtTime(900, c.currentTime);
+        o.frequency.exponentialRampToValueAtTime(640, c.currentTime + 0.05);
+        g.gain.setValueAtTime(0.0001, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.05, c.currentTime + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.08);
+        o.connect(g);
+        g.connect(c.destination);
+        o.start();
+        o.stop(c.currentTime + 0.09);
+      } catch {}
+    }
+    function pop() {
+      try {
+        const c = ensure();
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = "sine";
+        o.frequency.setValueAtTime(520, c.currentTime);
+        o.frequency.exponentialRampToValueAtTime(1040, c.currentTime + 0.08);
+        g.gain.setValueAtTime(0.0001, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.07, c.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.13);
+        o.connect(g);
+        g.connect(c.destination);
+        o.start();
+        o.stop(c.currentTime + 0.14);
+      } catch {}
+    }
+    return { correct, wrong, pop };
   }
+
+  const balloonGame = (() => {
+    const LETTERS = "abcdefghijklmnopqrstuvwxyz".split("");
+    const COLORS = ["#2f6bff", "#7b5cff", "#f43f7a", "#f59e0b", "#22c55e", "#06b6d4", "#8b5cf6", "#ec4899"];
+    const DURATIONS = [
+      { id: 30, label: "30s" },
+      { id: 60, label: "1 min" },
+      { id: 120, label: "2 min" },
+      { id: 180, label: "3 min" }
+    ];
+    const BALLOON_W = 62;
+    const BALLOON_H = 84;
+    const START_LIVES = 3;
+
+    const setupPanel = $("balloonSetup");
+    const runEl = $("balloonRun");
+    const durationsEl = $("balloonDurations");
+    const sky = $("balloonSky");
+    const overlay = $("balloonOverlay");
+    const overlayTitle = $("balloonMsgTitle");
+    const overlayText = $("balloonMsgText");
+    const playBtn = $("balloonPlay");
+    const startBtn = $("balloonStart");
+    const stopBtn = $("balloonStop");
+    const scoreEl = $("balloonScore");
+    const bestEl = $("balloonBest");
+    const livesEl = $("balloonLives");
+    const levelEl = $("balloonLevel");
+    const timeEl = $("balloonTime");
+
+    let running = false;
+    let balloons = [];
+    let score = 0;
+    let lives = START_LIVES;
+    let level = 1;
+    let spawnTimer = 0;
+    let rafId = 0;
+    let lastTs = 0;
+    let durationMs = 60000;
+    let timeLeft = 60000;
+    let selectedDuration = 60;
+    let best = Number(localStorage.getItem("typefast-balloon-best") || 0);
+
+    if (bestEl) bestEl.textContent = String(best);
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    function nextLetter() {
+      const used = new Set(balloons.map((b) => b.letter));
+      const free = LETTERS.filter((l) => !used.has(l));
+      const pool = free.length ? free : LETTERS;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function speedFor() { return 30 + level * 6; }
+    function spawnIntervalFor() { return Math.max(560, 1250 - level * 65); }
+
+    function fmtTime(ms) {
+      const s = Math.max(0, Math.ceil(ms / 1000));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return m + ":" + String(r).padStart(2, "0");
+    }
+
+    function setHud() {
+      if (scoreEl) scoreEl.textContent = String(score);
+      if (livesEl) livesEl.textContent = String(Math.max(0, lives));
+      if (levelEl) levelEl.textContent = String(level);
+      if (bestEl) bestEl.textContent = String(best);
+      if (timeEl) timeEl.textContent = fmtTime(timeLeft);
+    }
+
+    function paintDurations() {
+      if (!durationsEl) return;
+      durationsEl.innerHTML = "";
+      DURATIONS.forEach((item) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "duration-card" + (selectedDuration === item.id ? " is-on" : "");
+        const big = item.id < 60 ? String(item.id) : String(item.id / 60);
+        const unit = item.id < 60 ? "seconds" : item.id === 60 ? "minute" : "minutes";
+        b.innerHTML = "<strong>" + big + "</strong><span>" + unit + "</span>";
+        b.addEventListener("click", () => {
+          selectedDuration = item.id;
+          paintDurations();
+        });
+        b.addEventListener("dblclick", beginRun);
+        durationsEl.appendChild(b);
+      });
+      const picked = DURATIONS.find((d) => d.id === selectedDuration);
+      if (startBtn) startBtn.textContent = "Start " + (picked ? picked.label : "") + " game →";
+    }
+
+    function clearBalloons() {
+      balloons.forEach((b) => b.el.remove());
+      balloons = [];
+      if (sky) sky.querySelectorAll(".balloon").forEach((el) => el.remove());
+    }
+
+    function showOverlay(title, text, label) {
+      if (!overlay) return;
+      overlayTitle.textContent = title;
+      overlayText.textContent = text;
+      playBtn.textContent = label;
+      overlay.classList.remove("is-hidden");
+    }
+
+    function hideOverlay() { if (overlay) overlay.classList.add("is-hidden"); }
+
+    function spawn() {
+      if (!sky) return;
+      const width = sky.clientWidth;
+      const height = sky.clientHeight;
+      const x = rand(8, Math.max(10, width - BALLOON_W - 8));
+      const letter = nextLetter();
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const el = document.createElement("div");
+      el.className = "balloon";
+      el.style.transform = `translate(${x}px, ${height}px)`;
+      const inner = document.createElement("div");
+      inner.className = "balloon-inner";
+      const body = document.createElement("div");
+      body.className = "balloon-body";
+      body.style.setProperty("--balloon-color", color);
+      const span = document.createElement("span");
+      span.textContent = letter.toUpperCase();
+      inner.appendChild(body);
+      inner.appendChild(span);
+      el.appendChild(inner);
+      sky.appendChild(el);
+      balloons.push({ el, inner, letter, x, y: height, speed: speedFor(), popped: false });
+    }
+
+    function popBalloon(b) {
+      if (b.popped) return;
+      b.popped = true;
+      b.el.classList.add("is-pop");
+      balloons = balloons.filter((x) => x !== b);
+      score += 1;
+      if (audio && audio.pop) audio.pop();
+      const nextLevel = 1 + Math.floor(score / 8);
+      if (nextLevel > level) level = nextLevel;
+      setHud();
+      setTimeout(() => b.el.remove(), 260);
+    }
+
+    function escapeBalloon(b) {
+      balloons = balloons.filter((x) => x !== b);
+      b.el.remove();
+      lives -= 1;
+      if (audio && audio.wrong) audio.wrong();
+      setHud();
+      if (lives <= 0) gameOver("Game over!");
+    }
+
+    function gameOver(title) {
+      halt();
+      const record = score > best;
+      if (record) {
+        best = score;
+        localStorage.setItem("typefast-balloon-best", String(best));
+      }
+      setHud();
+      showOverlay(
+        title,
+        "You popped " + score + " balloon" + (score === 1 ? "" : "s") + (record ? " — a new best!" : "") + " Best score: " + best + ".",
+        "Play again"
+      );
+    }
+
+    function update(dt) {
+      if (!sky) return;
+      timeLeft -= dt * 1000;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        setHud();
+        gameOver("Time's up!");
+        return;
+      }
+      spawnTimer -= dt * 1000;
+      if (spawnTimer <= 0) {
+        spawn();
+        spawnTimer = spawnIntervalFor();
+      }
+      const escapeY = -BALLOON_H - 30;
+      for (const b of balloons.slice()) {
+        if (!running) break;
+        b.y -= b.speed * dt;
+        b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+        if (b.y < escapeY) escapeBalloon(b);
+      }
+      if (timeEl) timeEl.textContent = fmtTime(timeLeft);
+    }
+
+    function loop(ts) {
+      if (!running) return;
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min(0.05, (ts - lastTs) / 1000);
+      lastTs = ts;
+      update(dt);
+      if (running) rafId = requestAnimationFrame(loop);
+    }
+
+    function onKey(e) {
+      if (!running) return;
+      if (e.key.length !== 1) return;
+      const letter = e.key.toLowerCase();
+      if (!/^[a-z]$/.test(letter)) return;
+      e.preventDefault();
+      const target = balloons
+        .filter((b) => b.letter === letter && !b.popped)
+        .sort((a, b) => a.y - b.y)[0];
+      if (target) popBalloon(target);
+    }
+
+    function start() {
+      if (!sky) return;
+      clearBalloons();
+      score = 0;
+      lives = START_LIVES;
+      level = 1;
+      spawnTimer = 420;
+      lastTs = 0;
+      durationMs = selectedDuration * 1000;
+      timeLeft = durationMs;
+      running = true;
+      setHud();
+      hideOverlay();
+      document.addEventListener("keydown", onKey);
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function beginRun() {
+      if (setupPanel) setupPanel.hidden = true;
+      if (runEl) runEl.hidden = false;
+      start();
+    }
+
+    function halt() {
+      running = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+      document.removeEventListener("keydown", onKey);
+    }
+
+    function showSetup() {
+      halt();
+      clearBalloons();
+      if (runEl) runEl.hidden = true;
+      if (setupPanel) setupPanel.hidden = false;
+      paintDurations();
+    }
+
+    function stop() {
+      showSetup();
+      setHud();
+    }
+
+    function open() {
+      halt();
+      clearBalloons();
+      selectedDuration = 60;
+      score = 0;
+      lives = START_LIVES;
+      level = 1;
+      timeLeft = selectedDuration * 1000;
+      if (runEl) runEl.hidden = true;
+      if (setupPanel) setupPanel.hidden = false;
+      setHud();
+      paintDurations();
+    }
+
+    function close() {
+      halt();
+      clearBalloons();
+    }
+
+    if (playBtn) playBtn.addEventListener("click", start);
+    if (startBtn) startBtn.addEventListener("click", beginRun);
+    if (stopBtn) stopBtn.addEventListener("click", stop);
+
+    paintDurations();
+
+    return { open, close };
+  })();
 
   function downloadCert() {
     if (!lastResult) return;
@@ -1329,6 +1669,7 @@
       }
     }
   } else {
+    document.body.classList.add("is-home");
     applySeo("home");
   }
 })();
