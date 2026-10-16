@@ -1,6 +1,7 @@
 (() => {
   const DURATIONS = [
     { id: 30, label: "30s" },
+    { id: 45, label: "45s" },
     { id: 60, label: "1 min" },
     { id: 120, label: "2 min" },
     { id: 180, label: "3 min" },
@@ -288,7 +289,7 @@
     if ($("previewText")) $("previewText").textContent = text + (words.length > 42 ? " ..." : "");
   }
 
-  function history() {
+  function readHistory() {
     try {
       return JSON.parse(localStorage.getItem(storeKey) || "[]");
     } catch {
@@ -297,14 +298,14 @@
   }
 
   function saveHistory(entry) {
-    const list = history();
+    const list = readHistory();
     list.unshift(entry);
     localStorage.setItem(storeKey, JSON.stringify(list.slice(0, 80)));
     paintHero();
   }
 
   function paintHero() {
-    const list = history();
+    const list = readHistory();
     if ($("statUsers")) $("statUsers").textContent = list.length ? String(Math.max(10000, 10000 + list.length)) + "+" : "10,000+";
     if (!list.length) {
       if ($("bestWpm")) $("bestWpm").textContent = "75+";
@@ -321,7 +322,7 @@
 
   function studioFmt(sec) {
     const s = Math.max(0, Math.floor(sec));
-    if (s <= 60) return "00:" + String(s).padStart(2, "0");
+    if (s < 60) return "00:" + String(s).padStart(2, "0");
     return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
   }
 
@@ -705,8 +706,9 @@
   }
 
   function onKey(e) {
+    if (!views.test || !views.test.classList.contains("is-active")) return;
     if ($("setupPanel") && !$("setupPanel").hidden) {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && !e.repeat) {
         e.preventDefault();
         startTest();
       }
@@ -714,7 +716,6 @@
     }
     if ($("testRun") && $("testRun").hidden) return;
     if (!state || state.finished) return;
-    if (!views.test || !views.test.classList.contains("is-active")) return;
     if ($("authModal") && !$("authModal").hidden) return;
     const tag = (e.target && e.target.tagName) || "";
     if (tag === "TEXTAREA") return;
@@ -892,7 +893,7 @@
     ctx.fillStyle = "#e8dcc8";
     ctx.font = "28px Cormorant Garamond, serif";
     ctx.textAlign = "center";
-    ctx.fillText("TYPEMASTER CERTIFICATE", c.width / 2, 160);
+    ctx.fillText("TYPEFAST CERTIFICATE", c.width / 2, 160);
     ctx.font = "italic 64px Cormorant Garamond, serif";
     ctx.fillStyle = "#f4eee4";
     ctx.fillText("Typing Proficiency", c.width / 2, 260);
@@ -912,10 +913,10 @@
       c.width / 2,
       640
     );
-    ctx.fillText("Generated locally by TypeMaster", c.width / 2, 780);
+    ctx.fillText("Generated locally by TypeFast", c.width / 2, 780);
     const a = document.createElement("a");
     a.href = c.toDataURL("image/png");
-    a.download = "typemaster-certificate.png";
+    a.download = "typefast-certificate.png";
     a.click();
   }
 
@@ -1208,7 +1209,7 @@
   }
 
   function paintHistory() {
-    const list = history();
+    const list = readHistory();
     const sum = $("historySummary");
     if (!sum) return;
     if (!list.length) {
@@ -1254,6 +1255,8 @@
     });
     document.querySelectorAll("[data-nav]").forEach((el) => {
       el.addEventListener("click", (e) => {
+        const link = el.tagName === "A";
+        if (link && (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) return;
         e.preventDefault();
         const name = el.dataset.nav;
         if (name === "history") paintHistory();
@@ -1272,6 +1275,8 @@
     });
     document.querySelectorAll("[data-prac-go]").forEach((el) => {
       el.addEventListener("click", (e) => {
+        const link = el.tagName === "A";
+        if (link && (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) return;
         e.preventDefault();
         e.stopPropagation();
         paintKeysPage();
@@ -1292,10 +1297,12 @@
     if ($("newTestBtn")) $("newTestBtn").addEventListener("click", () => show("home"));
     if ($("certBtn")) $("certBtn").addEventListener("click", downloadCert);
     if ($("practiceStart")) $("practiceStart").addEventListener("click", () => {
+      const customText = ($("customText") && $("customText").value) || "";
       openTimedSetup({
         mode: "practice",
         duration: 60,
-        customText: ($("customText") && $("customText").value) || "",
+        customText,
+        practice: customText.trim() ? "custom" : settings.practice,
         collection: "mixed"
       });
     });
@@ -1336,7 +1343,9 @@
     window.addEventListener("popstate", navigated);
     window.addEventListener("hashchange", () => {
       if (!location.hash || location.hash === "#") return;
-      navigate(urlFor(legacyHashToName(location.hash)));
+      const target = urlFor(legacyHashToName(location.hash));
+      history.replaceState(null, "", target);
+      navigated();
     });
   }
 

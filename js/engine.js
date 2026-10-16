@@ -225,10 +225,10 @@ const Engine = (() => {
 
   function finish(state) {
     if (state.finished) return;
+    if (state.running && state.startedAt) sample(state);
     state.running = false;
     state.finished = true;
     state.endedAt = Date.now();
-    sample(state);
   }
 
   function tick(state) {
