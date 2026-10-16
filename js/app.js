@@ -1059,6 +1059,7 @@
     document.body.classList.remove("is-kw");
     kw.letter = "";
     document.querySelectorAll("#letterGrid .letter-card").forEach((el) => el.classList.remove("is-on"));
+    document.querySelectorAll("#kwStage .kw-hands path.is-on").forEach((el) => el.classList.remove("is-on"));
   }
 
   function startKwLetter(ch) {
@@ -1097,6 +1098,14 @@
     el.innerHTML = html;
     const next = (t[kw.index] || " ").toLowerCase();
     buildStudioBoard($("keysPreviewBoard"), next);
+    paintKwFinger(next);
+  }
+
+  function paintKwFinger(next) {
+    const f = fingerFor(next);
+    document.querySelectorAll("#kwStage .kw-hands path").forEach((p) => {
+      p.classList.toggle("is-on", !!f && p.dataset.finger === f);
+    });
   }
 
   function feedKw(ch) {

@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=41">
+  <link rel="stylesheet" href="/css/style.css?v=42">
   <style>
     html, body { background: #f4f7fb !important; color: #1b2437 !important; color-scheme: light; }
 :root {
@@ -297,6 +297,10 @@ body.is-kw .kw-board { flex: 1; padding-bottom: 80px; }
   position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
   width: min(92%, 520px); height: 132px; pointer-events: none;
 }
+.kw-hands path { transition: stroke .12s ease, stroke-width .12s ease, filter .12s ease; }
+.kw-hands path.is-on { stroke-width: 5.4; filter: drop-shadow(0 2px 5px rgba(15, 23, 42, .3)); }
+.kw-hands .kf-left.is-on { stroke: #1d4ed8; }
+.kw-hands .kf-right.is-on { stroke: #15803d; }
 .kb-hands { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); width: min(100%, 440px); height: 110px; pointer-events: none; }
 .studio-input {
   width: 100%; border: 1px solid var(--line); border-radius: 12px;
@@ -932,16 +936,16 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
           <input class="kw-input" id="kwInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here...">
           <div class="kw-board" id="keysPreviewBoard"></div>
           <svg class="kw-hands" viewBox="0 0 440 160" aria-hidden="true">
-            <path d="M118 22c6 24 10 44 8 68-8 4-16 6-22 2 2-24 4-46-2-68 5-4 10-4 16-2z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M148 10c4 30 6 54 4 76-8 2-14 0-18-6 4-24 6-48 0-70 5-4 10-4 14 0z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M176 6c2 32 2 58 0 80-8 0-14-4-16-10 4-24 6-50 2-72 5-2 10-2 14 2z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M204 12c0 30-2 56-6 76-8-2-12-8-12-14 6-22 8-46 6-68 4-2 9 0 12 6z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M128 86c20 20 44 32 64 28 4 10-4 22-16 26-30 4-58-10-76-28 4-12 16-22 28-26z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M322 22c-6 24-10 44-8 68 8 4 16 6 22 2-2-24-4-46 2-68-5-4-10-4-16-2z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M292 10c-4 30-6 54-4 76 8 2 14 0 18-6-4-24-6-48 0-70-5-4-10-4-14 0z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M264 6c-2 32-2 58 0 80 8 0 14-4 16-10-4-24-6-50-2-72-5-2-10-2-14 2z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M236 12c0 30 2 56 6 76 8-2 12-8 12-14-6-22-8-46-6-68-4-2-9 0-12 6z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
-            <path d="M312 86c-20 20-44 32-64 28-4 10 4 22 16 26 30 4 58-10 76-28-4-12-16-22-28-26z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-left" data-finger="lp" d="M118 22c6 24 10 44 8 68-8 4-16 6-22 2 2-24 4-46-2-68 5-4 10-4 16-2z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-left" data-finger="lr" d="M148 10c4 30 6 54 4 76-8 2-14 0-18-6 4-24 6-48 0-70 5-4 10-4 14 0z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-left" data-finger="lm" d="M176 6c2 32 2 58 0 80-8 0-14-4-16-10 4-24 6-50 2-72 5-2 10-2 14 2z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-left" data-finger="li" d="M204 12c0 30-2 56-6 76-8-2-12-8-12-14 6-22 8-46 6-68 4-2 9 0 12 6z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-left" data-finger="th" d="M128 86c20 20 44 32 64 28 4 10-4 22-16 26-30 4-58-10-76-28 4-12 16-22 28-26z" fill="none" stroke="#60a5fa" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-right" data-finger="rp" d="M322 22c-6 24-10 44-8 68 8 4 16 6 22 2-2-24-4-46 2-68-5-4-10-4-16-2z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-right" data-finger="rr" d="M292 10c-4 30-6 54-4 76 8 2 14 0 18-6-4-24-6-48 0-70-5-4-10-4-14 0z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-right" data-finger="rm" d="M264 6c-2 32-2 58 0 80 8 0 14-4 16-10-4-24-6-50-2-72-5-2-10-2-14 2z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-right" data-finger="ri" d="M236 12c0 30 2 56 6 76 8-2 12-8 12-14-6-22-8-46-6-68-4-2-9 0-12 6z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="kf-right" data-finger="th" d="M312 86c-20 20-44 32-64 28-4 10 4 22 16 26 30 4 58-10 76-28-4-12-16-22-28-26z" fill="none" stroke="#4ade80" stroke-width="3.2" stroke-linecap="round"/>
           </svg>
         </div>
         </div>
@@ -1056,8 +1060,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   <!-- route:start (generated by scripts/build-seo.mjs) -->
   <script>window.__SITE_ORIGIN__ = "https://example.com"; window.__ROUTE__ = "faq";</script>
   <!-- route:end -->
-  <script src="/js/texts.js?v=41"></script>
-  <script src="/js/engine.js?v=41"></script>
-  <script src="/js/app.js?v=41"></script>
+  <script src="/js/texts.js?v=42"></script>
+  <script src="/js/engine.js?v=42"></script>
+  <script src="/js/app.js?v=42"></script>
 </body>
 </html>

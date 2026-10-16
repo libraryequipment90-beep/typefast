@@ -260,6 +260,10 @@ body.is-kw .kw-board { flex: 1; padding-bottom: 80px; }
   position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
   width: min(92%, 520px); height: 132px; pointer-events: none;
 }
+.kw-hands path { transition: stroke .12s ease, stroke-width .12s ease, filter .12s ease; }
+.kw-hands path.is-on { stroke-width: 5.4; filter: drop-shadow(0 2px 5px rgba(15, 23, 42, .3)); }
+.kw-hands .kf-left.is-on { stroke: #1d4ed8; }
+.kw-hands .kf-right.is-on { stroke: #15803d; }
 .kb-hands { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); width: min(100%, 440px); height: 110px; pointer-events: none; }
 .studio-input {
   width: 100%; border: 1px solid var(--line); border-radius: 12px;
