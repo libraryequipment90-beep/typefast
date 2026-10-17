@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=49">
+  <link rel="stylesheet" href="css/style.css?v=50">
   <style>
     html, body { background: #f4f7fb !important; color: #1b2437 !important; color-scheme: light; }
 :root {
@@ -636,6 +636,17 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
     padding-top: 20px; padding-bottom: 20px;
   }
   .game-wrap .setup-panel { width: 100%; }
+  .level-picker { max-width: 640px; margin: -8px auto 24px; }
+  .level-picker-title {
+    margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .level-picker-title span {
+    display: block; margin-top: 4px; font-size: 12px; font-weight: 500;
+    color: var(--muted); text-transform: none; letter-spacing: 0;
+  }
+  .level-chips { justify-content: center; }
+  .level-chips .chip { min-width: 60px; }
   #balloonSetup[hidden], #balloonRun[hidden] { display: none !important; }
   #balloonRun { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
   .balloon-hud { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 12px; }
@@ -1068,6 +1079,10 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
           <h1 id="balloonSetupTitle">How long do you want to play?</h1>
           <p class="section-sub" id="balloonSetupSub">Balloons float up with a letter on them. Type that letter to pop the balloon before it escapes.</p>
           <div class="duration-grid" id="balloonDurations"></div>
+          <div class="level-picker">
+            <p class="level-picker-title">Choose a level <span id="balloonLevelHint">Level 1 · easy pace</span></p>
+            <div class="chips level-chips" id="balloonLevels"></div>
+          </div>
           <button class="btn-primary" id="balloonStart">Start game →</button>
         </div>
 
@@ -1134,8 +1149,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   </footer>
 
   <canvas id="certCanvas" width="1400" height="900" hidden></canvas>
-  <script src="js/texts.js?v=49"></script>
-  <script src="js/engine.js?v=49"></script>
-  <script src="js/app.js?v=49"></script>
+  <script src="js/texts.js?v=50"></script>
+  <script src="js/engine.js?v=50"></script>
+  <script src="js/app.js?v=50"></script>
 </body>
 </html>

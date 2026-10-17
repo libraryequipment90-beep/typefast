@@ -892,10 +892,20 @@
     const BALLOON_W = 62;
     const BALLOON_H = 84;
     const START_LIVES = 3;
+    const MAX_LEVEL = 5;
+    const LEVEL_HINTS = {
+      1: "easy pace",
+      2: "relaxed",
+      3: "moderate",
+      4: "fast",
+      5: "expert"
+    };
 
     const setupPanel = $("balloonSetup");
     const runEl = $("balloonRun");
     const durationsEl = $("balloonDurations");
+    const levelsEl = $("balloonLevels");
+    const levelHintEl = $("balloonLevelHint");
     const sky = $("balloonSky");
     const overlay = $("balloonOverlay");
     const overlayTitle = $("balloonMsgTitle");
@@ -920,6 +930,8 @@
     let durationMs = 60000;
     let timeLeft = 60000;
     let selectedDuration = 60;
+    let selectedLevel = 1;
+    let runBaseLevel = 1;
     let best = Number(localStorage.getItem("typefast-balloon-best") || 0);
 
     if (bestEl) bestEl.textContent = String(best);
@@ -933,8 +945,8 @@
       return pool[Math.floor(Math.random() * pool.length)];
     }
 
-    function speedFor() { return 30 + level * 6; }
-    function spawnIntervalFor() { return Math.max(560, 1250 - level * 65); }
+    function speedFor() { return 24 + level * 11; }
+    function spawnIntervalFor() { return Math.max(620, 1500 - level * 110); }
 
     function fmtTime(ms) {
       const s = Math.max(0, Math.ceil(ms / 1000));
@@ -970,6 +982,23 @@
       });
       const picked = DURATIONS.find((d) => d.id === selectedDuration);
       if (startBtn) startBtn.textContent = "Start " + (picked ? picked.label : "") + " game →";
+    }
+
+    function paintLevels() {
+      if (levelHintEl) levelHintEl.textContent = "Level " + selectedLevel + " · " + (LEVEL_HINTS[selectedLevel] || "");
+      if (!levelsEl) return;
+      levelsEl.innerHTML = "";
+      for (let i = 1; i <= MAX_LEVEL; i++) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip" + (selectedLevel === i ? " is-on" : "");
+        b.textContent = "Level " + i;
+        b.addEventListener("click", () => {
+          selectedLevel = i;
+          paintLevels();
+        });
+        levelsEl.appendChild(b);
+      }
     }
 
     function clearBalloons() {
@@ -1019,7 +1048,7 @@
       balloons = balloons.filter((x) => x !== b);
       score += 1;
       if (audio && audio.pop) audio.pop();
-      const nextLevel = 1 + Math.floor(score / 8);
+      const nextLevel = Math.min(MAX_LEVEL, runBaseLevel + Math.floor(score / 8));
       if (nextLevel > level) level = nextLevel;
       setHud();
       setTimeout(() => b.el.remove(), 260);
@@ -1099,7 +1128,8 @@
       clearBalloons();
       score = 0;
       lives = START_LIVES;
-      level = 1;
+      runBaseLevel = selectedLevel;
+      level = selectedLevel;
       spawnTimer = 420;
       lastTs = 0;
       durationMs = selectedDuration * 1000;
@@ -1130,6 +1160,7 @@
       if (runEl) runEl.hidden = true;
       if (setupPanel) setupPanel.hidden = false;
       paintDurations();
+      paintLevels();
     }
 
     function stop() {
@@ -1143,12 +1174,14 @@
       selectedDuration = 60;
       score = 0;
       lives = START_LIVES;
-      level = 1;
+      runBaseLevel = selectedLevel;
+      level = selectedLevel;
       timeLeft = selectedDuration * 1000;
       if (runEl) runEl.hidden = true;
       if (setupPanel) setupPanel.hidden = false;
       setHud();
       paintDurations();
+      paintLevels();
     }
 
     function close() {
@@ -1161,6 +1194,7 @@
     if (stopBtn) stopBtn.addEventListener("click", stop);
 
     paintDurations();
+    paintLevels();
 
     return { open, close };
   })();
