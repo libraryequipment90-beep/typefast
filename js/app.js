@@ -673,7 +673,6 @@
     if ($("testRun") && $("testRun").hidden) return;
     if (!state || state.finished) return;
     if (!views.test || !views.test.classList.contains("is-active")) return;
-    if ($("authModal") && !$("authModal").hidden) return;
     const tag = (e.target && e.target.tagName) || "";
     if (tag === "TEXTAREA") return;
     if (tag === "INPUT" && e.target.id !== "hiddenInput") return;
@@ -1596,20 +1595,6 @@
       });
     });
     bindStudio();
-    const modal = $("authModal");
-    function openAuth(title) {
-      if ($("authTitle")) $("authTitle").textContent = title;
-      if (modal) modal.hidden = false;
-    }
-    if ($("loginBtn")) $("loginBtn").addEventListener("click", () => openAuth("Login"));
-    if ($("signupBtn")) $("signupBtn").addEventListener("click", () => openAuth("Sign Up"));
-    if ($("authClose")) $("authClose").addEventListener("click", () => { if (modal) modal.hidden = true; });
-    if ($("authSave")) $("authSave").addEventListener("click", () => {
-      const name = ($("authName") && $("authName").value.trim()) || "Guest";
-      localStorage.setItem("typefast-user", name);
-      if ($("loginBtn")) $("loginBtn").textContent = name;
-      if (modal) modal.hidden = true;
-    });
     if ($("typeStage")) {
       $("typeStage").addEventListener("click", () => {
         if ($("focusVeil")) $("focusVeil").classList.add("is-hidden");
@@ -1650,8 +1635,6 @@
   try { paintHero(); } catch (err) {}
   try { updatePreview(); } catch (err) {}
   try { bind(); } catch (err) {}
-  const savedUser = localStorage.getItem("typefast-user");
-  if (savedUser && $("loginBtn")) $("loginBtn").textContent = savedUser;
   const bootHash = (location.hash || "").replace("#", "");
   if (bootHash && bootHash !== "home") {
     const paneFromHash = bootHash.indexOf("practice-") === 0 ? bootHash.slice(9) : (bootHash === "keys" ? "key" : bootHash === "lessons" ? "lesson" : "");
