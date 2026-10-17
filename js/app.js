@@ -887,7 +887,9 @@
       { id: 30, label: "30s" },
       { id: 60, label: "1 min" },
       { id: 120, label: "2 min" },
-      { id: 180, label: "3 min" }
+      { id: 180, label: "3 min" },
+      { id: 300, label: "5 min" },
+      { id: 600, label: "10 min" }
     ];
     const BALLOON_W = 62;
     const BALLOON_H = 84;
