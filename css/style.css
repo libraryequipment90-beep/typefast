@@ -83,15 +83,13 @@ button { font: inherit; cursor: pointer; transition: background .18s ease, color
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
-.header-actions { display: flex; gap: 10px; flex-shrink: 0; }
-.btn-login, .btn-signup, .btn-primary, .btn-secondary, .btn-ghost, .mode-btn {
+.btn-primary, .btn-secondary, .btn-ghost, .mode-btn {
   border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 700;
 }
-.btn-login { background: #fff; border: 1.5px solid #dbe3f0; color: #334155; padding: 9px 20px; }
-.btn-signup, .btn-primary { background: var(--blue); color: #fff; box-shadow: 0 10px 22px rgba(47,107,255,.28); }
+.btn-primary { background: var(--blue); color: #fff; box-shadow: 0 10px 22px rgba(47,107,255,.28); }
 .btn-secondary, .btn-ghost { background: #fff; border: 1.5px solid #dbe3f0; color: var(--ink); }
-.btn-primary:hover, .btn-signup:hover { filter: brightness(1.06); transform: translateY(-1px); }
-.btn-login:hover, .btn-secondary:hover, .btn-ghost:hover { border-color: #c9d6ee; background: #f8fafc; }
+.btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.btn-secondary:hover, .btn-ghost:hover { border-color: #c9d6ee; background: #f8fafc; }
 
 .hero {
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 24px; align-items: center;
@@ -389,6 +387,7 @@ body.is-exam .site-footer { display: none; }
   padding: 8px 28px 12px; background: #fff;
 }
 #view-test.is-exam .live-bar {
+  position: relative;
   justify-content: center; align-items: center; gap: 48px;
   padding: 10px 0 6px;
 }
@@ -397,6 +396,10 @@ body.is-exam .site-footer { display: none; }
 #view-test.is-exam .live-metric span { font-size: 12px; letter-spacing: .12em; }
 #view-test.is-exam .live-metric strong { font-size: 32px; letter-spacing: -0.03em; }
 #view-test.is-exam .live-time strong { font-size: 32px; color: var(--blue); }
+#view-test.is-exam .live-time {
+  position: absolute; right: 0; top: 6px;
+  min-width: 0; text-align: right;
+}
 #view-test.is-exam .type-stage {
   flex: 1;
   min-height: 180px;
@@ -548,19 +551,6 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
 }
 .copy { margin: 0; font-size: 12px; color: #64748b; }
 
-.modal[hidden] { display: none; }
-.modal {
-  position: fixed; inset: 0; background: rgba(15,23,42,.4);
-  display: grid; place-items: center; z-index: 40;
-}
-.modal-card {
-  width: min(360px, 92vw); background: #fff; border-radius: 20px; padding: 22px;
-  display: grid; gap: 10px;
-}
-.modal-card input {
-  border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit;
-}
-
 @media (max-width: 1180px) {
   .studio-guide { grid-template-columns: 1fr; }
   .hand-card { max-width: 360px; margin: 0 auto; }
@@ -601,7 +591,7 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   .kw-board .key.space-key, .studio-board .key.space-key { min-width: 120px; }
   .kw-prompt, .studio-prompt { font-size: 18px; }
   #view-test.is-exam .type-stage { font-size: 20px; padding: 12px 8px 32px; }
-  .header-actions .btn-login, .header-actions .btn-signup { padding: 8px 12px; font-size: 13px; }
+  #view-test.is-exam .live-time { position: static; text-align: center; }
 }
 
 @media (max-width: 520px) {
