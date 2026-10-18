@@ -1,7 +1,6 @@
 (() => {
   const DURATIONS = [
     { id: 30, label: "30s" },
-    { id: 45, label: "45s" },
     { id: 60, label: "1 min" },
     { id: 120, label: "2 min" },
     { id: 180, label: "3 min" },
@@ -926,11 +925,11 @@
     LESSONS.forEach((L) => {
       const card = document.createElement("button");
       card.className = "lesson-card";
-      card.innerHTML = `<strong>${L.title}</strong><span>${L.keys}</span><em>45 second drill</em>`;
+      card.innerHTML = `<strong>${L.title}</strong><span>${L.keys}</span><em>60 second drill</em>`;
       card.addEventListener("click", () => {
         openTimedSetup({
           mode: "lesson",
-          duration: 45,
+          duration: 60,
           lessonPrompt: L.prompt,
           collection: "easy",
           punctuation: false,
@@ -992,7 +991,7 @@
       const card = document.createElement("button");
       card.className = "lesson-card";
       card.innerHTML = `<strong>${d.title}</strong><span>${d.keys}</span><em>Key test</em>`;
-      card.addEventListener("click", () => startDrill("key", d.prompt, 45));
+      card.addEventListener("click", () => startDrill("key", d.prompt, 60));
       keyGrid.appendChild(card);
     });
     const wordGrid = $("keywordGrid");

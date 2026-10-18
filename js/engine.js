@@ -29,7 +29,7 @@ const Engine = (() => {
     if (settings.mode === "lesson" || settings.mode === "letter" || settings.mode === "key" || settings.mode === "keyword") {
       const src = settings.lessonPrompt || "asdf";
       let words = splitWords(src);
-      const need = Math.max(40, Math.ceil((settings.duration || 45) * 3));
+      const need = Math.max(40, Math.ceil((settings.duration || 60) * 3));
       while (words.length < need) words = words.concat(splitWords(src));
       return words;
     }
