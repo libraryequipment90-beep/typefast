@@ -1320,6 +1320,7 @@
       });
     });
     bindStudio();
+    bindNavToggle();
     if ($("typeStage")) {
       $("typeStage").addEventListener("click", () => {
         if ($("focusVeil")) $("focusVeil").classList.add("is-hidden");
@@ -1340,6 +1341,45 @@
       history.replaceState(null, "", target);
       navigated();
     });
+  }
+
+  function bindNavToggle() {
+    const toggle = $("navToggle");
+    const nav = $("mainNav");
+    if (!toggle || !nav) return;
+    const setOpen = (open) => {
+      nav.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setOpen(!nav.classList.contains("is-open"));
+    });
+    nav.addEventListener("click", (e) => {
+      if (e.target.closest("a")) setOpen(false);
+    });
+    document.addEventListener("click", (e) => {
+      if (!nav.classList.contains("is-open")) return;
+      if (nav.contains(e.target) || toggle.contains(e.target)) return;
+      setOpen(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && nav.classList.contains("is-open")) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 980) setOpen(false);
+    });
+    if (typeof window.matchMedia === "function") {
+      const mq = window.matchMedia("(min-width: 981px)");
+      if (mq && typeof mq.addEventListener === "function") {
+        mq.addEventListener("change", (e) => { if (e.matches) setOpen(false); });
+      } else if (mq && typeof mq.addListener === "function") {
+        mq.addListener((e) => { if (e.matches) setOpen(false); });
+      }
+    }
   }
 
   function legacyHashToName(hash) {
