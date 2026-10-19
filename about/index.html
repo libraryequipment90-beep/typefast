@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=45">
+  <link rel="stylesheet" href="/css/style.css?v=46">
   <style>
     html, body { background: #f4f7fb !important; color: #1b2437 !important; color-scheme: light; }
 :root {
@@ -70,6 +70,9 @@ body {
   background: var(--bg);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+@media (min-width: 900px) {
+  body.is-home { zoom: 1.15; }
 }
 
 button { font: inherit; cursor: pointer; transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease, border-color .18s ease; }
@@ -344,6 +347,9 @@ body.is-kw .kw-board { flex: 1; padding-bottom: 80px; }
 .section-kicker { letter-spacing: 0.22em; font-size: 11px; color: #94a3b8; font-weight: 700; margin: 0 0 10px; }
 h2 { font-size: 34px; margin: 0 0 10px; letter-spacing: -0.03em; font-weight: 800; }
 .section-sub { margin: 0 auto 32px; }
+#view-practice .section-sub,
+#view-history .section-sub,
+#view-faq .section-sub { margin-left: 0; margin-right: 0; max-width: 640px; }
 .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: left; }
 .mode-card {
   background: #fff; border: 1px solid #eef2f7; border-radius: 22px;
@@ -438,7 +444,7 @@ body.is-exam .site-footer { display: none; }
   justify-content: center; align-items: center; gap: 48px;
   padding: 10px 0 6px;
 }
-#view-test.is-exam .live-extras { align-items: center; gap: 40px; }
+#view-test.is-exam .live-extras { display: none; }
 #view-test.is-exam .live-metric { text-align: center; min-width: 88px; }
 #view-test.is-exam .live-metric span { font-size: 12px; letter-spacing: .12em; }
 #view-test.is-exam .live-metric strong { font-size: 32px; letter-spacing: -0.03em; }
@@ -480,7 +486,7 @@ body.is-exam .site-footer { display: none; }
 .word { display: inline-flex; }
 .ch { display: inline-block; border-bottom: 2px solid transparent; }
 .ch.ok { color: var(--ok); }
-.ch.bad { color: var(--bad); background: #ffe4ea; }
+.ch.bad { color: #dc2626; background: #fee2e2; border-radius: 3px; }
 .ch.cur { border-bottom-color: var(--blue); }
 .caret { position: absolute; top: 0; left: 0; width: 2px; background: var(--blue); pointer-events: none; }
 .focus-veil {
@@ -669,6 +675,91 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   .result-actions .btn-primary, .result-actions .btn-secondary { width: 100%; }
 }
 
+  /* Balloon typing game */
+  .game-wrap {
+    max-width: 900px;
+    display: flex; flex-direction: column; justify-content: center;
+    min-height: calc(100vh - 66px);
+    padding-top: 20px; padding-bottom: 20px;
+  }
+  .game-wrap .setup-panel { width: 100%; }
+  .level-picker { max-width: 640px; margin: -8px auto 24px; }
+  .level-picker-title {
+    margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .level-picker-title span {
+    display: block; margin-top: 4px; font-size: 12px; font-weight: 500;
+    color: var(--muted); text-transform: none; letter-spacing: 0;
+  }
+  .level-chips { justify-content: center; }
+  .level-chips .chip { min-width: 60px; }
+  #balloonSetup[hidden], #balloonRun[hidden] { display: none !important; }
+  #balloonRun { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  .balloon-hud { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 12px; }
+  .balloon-hud .hud-item {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 6px 14px; box-shadow: var(--shadow); text-align: center; min-width: 74px;
+  }
+  .balloon-hud .hud-item span { display: block; color: var(--muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+  .balloon-hud .hud-item strong { font-size: 20px; }
+  .balloon-hud .hud-time strong { color: var(--blue); }
+  .balloon-hud .hud-spacer { flex: 1 1 40px; }
+  .balloon-sky {
+    position: relative; flex: 1 1 auto; min-height: 320px;
+    border-radius: 24px; overflow: hidden;
+    border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+    background: linear-gradient(180deg, #cfe3ff 0%, #e8f1ff 42%, #ffffff 100%);
+  }
+  .balloon-sky::before, .balloon-sky::after {
+    content: ""; position: absolute; border-radius: 50%; background: #fff; opacity: .55; pointer-events: none;
+  }
+  .balloon-sky::before { width: 190px; height: 70px; top: 64px; left: 6%; box-shadow: 60px 12px 0 -6px #fff, 120px -8px 0 -14px #fff; }
+  .balloon-sky::after { width: 150px; height: 54px; top: 150px; right: 8%; box-shadow: -70px -6px 0 -8px #fff; }
+  .balloon { position: absolute; top: 0; left: 0; width: 62px; height: 84px; will-change: transform; }
+  .balloon-inner { position: relative; width: 100%; height: 100%; display: grid; place-items: center; transform-origin: 50% 45%; }
+  .balloon-inner::after {
+    content: ""; position: absolute; top: 100%; left: 50%; width: 1.5px; height: 20px;
+    background: rgba(100,116,139,.45); border-radius: 2px; transform: translateX(-50%);
+  }
+  .balloon-body {
+    position: absolute; inset: 0 0 8px; border-radius: 50% 50% 46% 46%;
+    background: radial-gradient(circle at 32% 26%, rgba(255,255,255,.55), transparent 46%), var(--balloon-color, #2f6bff);
+    box-shadow: inset -6px -8px 16px rgba(15,23,42,.14);
+  }
+  .balloon-body::after {
+    content: ""; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent;
+    border-top: 10px solid var(--balloon-color, #2f6bff);
+  }
+  .balloon span {
+    position: relative; z-index: 2; color: #fff; font-weight: 800; font-size: 26px;
+    text-transform: uppercase; text-shadow: 0 2px 4px rgba(15,23,42,.28); margin-bottom: 8px;
+  }
+  .balloon.is-pop .balloon-inner { animation: balloonPop .24s ease forwards; }
+  @keyframes balloonPop {
+    0% { transform: scale(1); opacity: 1; }
+    45% { transform: scale(1.28); opacity: 1; }
+    100% { transform: scale(1.65); opacity: 0; }
+  }
+  .balloon-overlay {
+    position: absolute; inset: 0; display: grid; place-items: center; z-index: 5;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+  }
+  .balloon-overlay.is-hidden { display: none; }
+  .balloon-card {
+    background: #fff; border: 1px solid var(--line); border-radius: 22px;
+    padding: 26px 30px; text-align: center; box-shadow: var(--shadow-lg); max-width: 360px;
+  }
+  .balloon-card h3 { margin: 0 0 8px; font-size: 22px; }
+  .balloon-card p { margin: 0 0 16px; color: var(--muted); font-size: 15px; line-height: 1.6; }
+  @media (max-width: 720px) {
+    .game-wrap { min-height: 0; }
+    .balloon-sky { min-height: 62vh; }
+    .balloon { width: 54px; height: 74px; }
+    .balloon span { font-size: 22px; }
+  }
+
   </style>
 </head>
 <body>
@@ -707,6 +798,7 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
         </div>
       </div>
       <a class="nav-btn" href="/leaderboard/" data-nav="history">Leaderboard</a>
+      <a class="nav-btn" href="/balloon/" data-nav="game">Balloon Game</a>
       <a class="nav-btn" href="/about/" data-nav="faq">About</a>
     </nav>
   </header>
@@ -1029,6 +1121,44 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
         <div class="faq" id="faqList"></div>
       </div>
     </section>
+
+    <section id="view-game" class="view">
+      <div class="page-wrap game-wrap">
+        <div class="setup-panel" id="balloonSetup">
+          <p class="section-kicker">ARCADE</p>
+          <h1 id="balloonSetupTitle">How long do you want to play?</h1>
+          <p class="section-sub" id="balloonSetupSub">Balloons float up with a letter on them. Type that letter to pop the balloon before it escapes.</p>
+          <div class="duration-grid" id="balloonDurations"></div>
+          <div class="level-picker">
+            <p class="level-picker-title">Choose a level <span id="balloonLevelHint">Level 1 · easy pace</span></p>
+            <div class="chips level-chips" id="balloonLevels"></div>
+          </div>
+          <button class="btn-primary" id="balloonStart">Start game →</button>
+        </div>
+
+        <div id="balloonRun" hidden>
+          <div class="balloon-hud">
+            <div class="hud-item hud-time"><span>Time</span><strong id="balloonTime">1:00</strong></div>
+            <div class="hud-item"><span>Score</span><strong id="balloonScore">0</strong></div>
+            <div class="hud-item"><span>Best</span><strong id="balloonBest">0</strong></div>
+            <div class="hud-item"><span>Lives</span><strong id="balloonLives">3</strong></div>
+            <div class="hud-item"><span>Level</span><strong id="balloonLevel">1</strong></div>
+            <div class="hud-spacer"></div>
+            <button class="btn-ghost" id="balloonStop">Stop</button>
+          </div>
+          <div class="balloon-sky" id="balloonSky">
+            <div class="balloon-overlay is-hidden" id="balloonOverlay">
+              <div class="balloon-card">
+                <h3 id="balloonMsgTitle">Ready to play?</h3>
+                <p id="balloonMsgText">Type the letter on each balloon to pop it before it floats away.</p>
+                <button class="btn-primary" id="balloonPlay">Play</button>
+              </div>
+            </div>
+          </div>
+          <p class="hint">Tip: keep your fingers on the home row and watch the balloons, not the keyboard.</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -1053,6 +1183,7 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
       <a href="/typing-test/" data-nav="test">Typing Test</a>
       <a href="/practice/" data-nav="practice">Practice</a>
       <a href="/leaderboard/" data-nav="history">Leaderboard</a>
+      <a href="/balloon/" data-nav="game">Balloon Game</a>
       <a href="/about/" data-nav="faq">About</a>
       <a href="/about/" data-nav="faq">Contact</a>
     </nav>
@@ -1071,8 +1202,8 @@ canvas { width: 100%; height: auto; background: #f8fafc; border: 1px solid var(-
   <!-- route:start (generated by scripts/build-seo.mjs) -->
   <script>window.__SITE_ORIGIN__ = "https://example.com"; window.__ROUTE__ = "faq";</script>
   <!-- route:end -->
-  <script src="/js/texts.js?v=45"></script>
-  <script src="/js/engine.js?v=45"></script>
-  <script src="/js/app.js?v=45"></script>
+  <script src="/js/texts.js?v=46"></script>
+  <script src="/js/engine.js?v=46"></script>
+  <script src="/js/app.js?v=46"></script>
 </body>
 </html>

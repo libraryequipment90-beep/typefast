@@ -57,6 +57,17 @@ export const ROUTES = [
     inSitemap: true,
   },
   {
+    path: "/balloon/",
+    view: "game",
+    out: "balloon/index.html",
+    title: "Type a Balloon — Fun Typing Game | TypeFast",
+    description:
+      "Play Type a Balloon, a free typing game. Type the letter on each floating balloon to pop it and build your speed and accuracy.",
+    priority: "0.7",
+    changefreq: "weekly",
+    inSitemap: true,
+  },
+  {
     path: "/about/",
     view: "faq",
     out: "about/index.html",
