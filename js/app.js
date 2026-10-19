@@ -1000,8 +1000,8 @@
       return pool[Math.floor(Math.random() * pool.length)];
     }
 
-    function speedFor() { return 24 + level * 11; }
-    function spawnIntervalFor() { return Math.max(620, 1500 - level * 110); }
+    function speedFor() { return 50 + level * 18; }
+    function spawnIntervalFor() { return Math.max(450, 1200 - level * 140); }
 
     function fmtTime(ms) {
       const s = Math.max(0, Math.ceil(ms / 1000));
