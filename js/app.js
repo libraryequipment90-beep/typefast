@@ -968,11 +968,8 @@
     const playBtn = $("balloonPlay");
     const startBtn = $("balloonStart");
     const stopBtn = $("balloonStop");
-    const scoreEl = $("balloonScore");
-    const bestEl = $("balloonBest");
-    const livesEl = $("balloonLives");
-    const levelEl = $("balloonLevel");
     const timeEl = $("balloonTime");
+    const timerWrap = $("headerTimerWrap");
 
     let running = false;
     let balloons = [];
@@ -988,8 +985,6 @@
     let selectedLevel = 1;
     let runBaseLevel = 1;
     let best = Number(localStorage.getItem("typefast-balloon-best") || 0);
-
-    if (bestEl) bestEl.textContent = String(best);
 
     function rand(min, max) { return Math.random() * (max - min) + min; }
 
@@ -1011,11 +1006,13 @@
     }
 
     function setHud() {
-      if (scoreEl) scoreEl.textContent = String(score);
-      if (livesEl) livesEl.textContent = String(Math.max(0, lives));
-      if (levelEl) levelEl.textContent = String(level);
-      if (bestEl) bestEl.textContent = String(best);
       if (timeEl) timeEl.textContent = fmtTime(timeLeft);
+    }
+
+    function setPlayChrome(on) {
+      document.body.classList.toggle("is-balloon-play", on);
+      if (timerWrap) timerWrap.hidden = !on;
+      if (stopBtn) stopBtn.hidden = !on;
     }
 
     function paintDurations() {
@@ -1199,6 +1196,7 @@
     function beginRun() {
       if (setupPanel) setupPanel.hidden = true;
       if (runEl) runEl.hidden = false;
+      setPlayChrome(true);
       start();
     }
 
@@ -1212,6 +1210,7 @@
     function showSetup() {
       halt();
       clearBalloons();
+      setPlayChrome(false);
       if (runEl) runEl.hidden = true;
       if (setupPanel) setupPanel.hidden = false;
       paintDurations();
@@ -1232,6 +1231,7 @@
       runBaseLevel = selectedLevel;
       level = selectedLevel;
       timeLeft = selectedDuration * 1000;
+      setPlayChrome(false);
       if (runEl) runEl.hidden = true;
       if (setupPanel) setupPanel.hidden = false;
       setHud();
@@ -1242,6 +1242,7 @@
     function close() {
       halt();
       clearBalloons();
+      setPlayChrome(false);
     }
 
     if (playBtn) playBtn.addEventListener("click", start);
